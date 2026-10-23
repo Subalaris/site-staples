@@ -1,0 +1,344 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:site-staples:settings:2",
+  "title": "Site Staples configuration export v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "plugin",
+    "schema_version",
+    "settings"
+  ],
+  "properties": {
+    "plugin": {
+      "const": "site-staples"
+    },
+    "schema_version": {
+      "const": 2
+    },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "comments",
+        "svg",
+        "duplicate",
+        "media",
+        "revisions",
+        "transfer",
+        "uninstall",
+        "image_sizes",
+        "redirects",
+        "maintenance",
+        "admin_cleanup",
+        "columns"
+      ],
+      "properties": {
+        "comments": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "scope",
+            "post_types"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "scope": {
+              "enum": [
+                "all",
+                "selected"
+              ]
+            },
+            "post_types": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{1,64}$"
+              }
+            }
+          }
+        },
+        "svg": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "roles"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "roles": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{1,64}$"
+              }
+            }
+          }
+        },
+        "duplicate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "post_types"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "post_types": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{1,64}$"
+              }
+            }
+          }
+        },
+        "media": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            }
+          }
+        },
+        "revisions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "limit"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            }
+          }
+        },
+        "transfer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            }
+          }
+        },
+        "uninstall": {
+          "type": "boolean"
+        },
+        "image_sizes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "disabled_sizes"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "disabled_sizes": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[^\\u0000-\\u001f\\u007f]{1,100}$"
+              }
+            }
+          }
+        },
+        "redirects": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "rules"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "rules": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "from",
+                  "to",
+                  "status"
+                ],
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "maxLength": 1024,
+                    "pattern": "^/"
+                  },
+                  "to": {
+                    "type": "string",
+                    "maxLength": 1024,
+                    "pattern": "^/"
+                  },
+                  "status": {
+                    "enum": [
+                      301,
+                      302
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "maintenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "roles",
+            "title",
+            "message"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "roles": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{1,64}$"
+              }
+            },
+            "title": {
+              "type": "string",
+              "maxLength": 120
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 2000
+            }
+          }
+        },
+        "admin_cleanup": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "roles",
+            "widgets",
+            "toolbar"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "roles": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{1,64}$"
+              }
+            },
+            "widgets": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "dashboard_primary",
+                  "dashboard_quick_press",
+                  "dashboard_activity",
+                  "dashboard_right_now",
+                  "dashboard_site_health"
+                ]
+              }
+            },
+            "toolbar": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "wp-logo",
+                  "updates",
+                  "comments",
+                  "new-content",
+                  "customize",
+                  "search"
+                ]
+              }
+            }
+          }
+        },
+        "columns": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "post_types",
+            "show_id",
+            "show_thumbnail",
+            "show_modified"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "post_types": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{1,64}$"
+              }
+            },
+            "show_id": {
+              "type": "boolean"
+            },
+            "show_thumbnail": {
+              "type": "boolean"
+            },
+            "show_modified": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "Runtime validation also enforces registered roles/post types, plain maintenance text, local redirect grammar, site path prefix, protected routes and graph cycle prevention."
+}

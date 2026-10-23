@@ -1,0 +1,159 @@
+body.settings_page_site-staples { background: #fff; }
+.site-staples-admin {
+	--st-ink: #282333;
+	--st-muted: #625c70;
+	--st-line: #e8e2ee;
+	--st-accent: #7212DB;
+	--st-accent-hover: #590EAD;
+	--st-soft: #f3eafa;
+	max-width: 1280px;
+	padding: 24px 28px 0;
+	box-sizing: border-box;
+	background: #fff;
+	color: var(--st-ink);
+	font-size: 16px;
+	line-height: 1.5;
+}
+.site-staples-admin *, .site-staples-admin *::before, .site-staples-admin *::after { box-sizing: border-box; }
+.site-staples-admin [hidden] { display: none !important; }
+.site-staples-admin svg {
+	width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.7;
+	stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0;
+}
+.site-staples-admin .site-staples-brandrow { padding-bottom: 24px; border-bottom: 1px solid var(--st-line); }
+.site-staples-admin .site-staples-brand { display: flex; align-items: center; gap: 12px; }
+.site-staples-admin .site-staples-brand-logo { display: block; width: 315px; max-width: calc(100% - 64px); height: auto; }
+.site-staples-admin .site-staples-version { font: 12px/1.5 monospace; color: var(--st-muted); border: 1px solid var(--st-line); border-radius: 5px; padding: 3px 6px; }
+.site-staples-admin .site-staples-tabs-layout { margin-top: 24px; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 30px; }
+.site-staples-admin .site-staples-navigation ul { padding: 0; margin: 0; }
+.site-staples-admin .site-staples-navigation li { margin: 0 0 5px; }
+.site-staples-admin .site-staples-nav-label { margin: 3px 12px 12px; font-size: 12px; font-weight: 650; letter-spacing: 1.4px; text-transform: uppercase; color: var(--st-muted); }
+.site-staples-admin .site-staples-navigation a { display: flex; gap: 10px; align-items: center; min-height: 46px; padding: 12px; border-radius: 7px; text-decoration: none; color: #625c70; }
+.site-staples-admin .site-staples-navigation a svg { width: 22px; height: 22px; }
+.site-staples-admin .site-staples-navigation a:hover { background: #f8f5fc; }
+.site-staples-admin .site-staples-navigation a[aria-selected="true"] { color: var(--st-accent); font-weight: 650; background: var(--st-soft); }
+.site-staples-admin .site-staples-nav-arrow { margin-inline-start: auto; visibility: hidden; }
+.site-staples-admin [aria-selected="true"] .site-staples-nav-arrow { visibility: visible; }
+.site-staples-admin .site-staples-nav-note { border-top: 1px solid var(--st-line); margin: 24px 12px 0; padding-top: 18px; font-size: 14px; color: var(--st-muted); line-height: 1.7; }
+.site-staples-admin .site-staples-nav-note strong { display: block; color: #484054; margin-bottom: 4px; }
+.site-staples-admin .site-staples-panels { min-width: 0; }
+.site-staples-admin .site-staples-group { margin-bottom: 28px; }
+.site-staples-admin .site-staples-group[role="tabpanel"] { margin-bottom: 0; }
+.site-staples-admin .site-staples-sectionhead { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 17px; }
+.site-staples-admin .site-staples-sectionhead h2 { font-size: 22px; letter-spacing: -.4px; margin: 0; color: var(--st-ink); }
+.site-staples-admin .site-staples-sectionhead p { font-size: 14px; color: var(--st-muted); margin: 3px 0 0; }
+.site-staples-admin .site-staples-count { font-size: 12px; white-space: nowrap; color: #6215b4; background: var(--st-soft); border-radius: 30px; padding: 5px 10px; }
+.site-staples-admin .site-staples-card { border: 1px solid var(--st-line); border-radius: 12px; background: #fff; margin: 0 0 14px; box-shadow: 0 2px 3px #34104d06; }
+.site-staples-admin .site-staples-cardhead { display: flex; gap: 14px; align-items: flex-start; padding: 22px 24px 12px; }
+.site-staples-admin .site-staples-feature-icon { width: 44px; height: 44px; display: grid; place-items: center; flex-shrink: 0; border: 1px solid var(--st-line); border-radius: 9px; background: #faf7fd; color: #79569c; }
+.site-staples-admin .site-staples-feature-icon svg { width: 24px; height: 24px; }
+.site-staples-admin .site-staples-feature-text { flex: 1; min-width: 0; }
+.site-staples-admin .site-staples-titleline { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.site-staples-admin .site-staples-titleline h3 { font-size: 16px; letter-spacing: -.15px; font-weight: 650; margin: 0; color: var(--st-ink); }
+.site-staples-admin .site-staples-feature-text p { color: var(--st-muted); font-size: 14px; margin: 5px 0 0; }
+.site-staples-admin .site-staples-badge { font-size: 12px; padding: 2px 7px; border-radius: 4px; background: #f3f1f6; color: #625c70; }
+.site-staples-admin .site-staples-badge[data-enabled="true"] { color: #6215b4; background: var(--st-soft); }
+.site-staples-admin .site-staples-switch-control { min-width: 44px; min-height: 44px; display: flex; align-items: flex-start; justify-content: flex-end; padding-top: 2px; cursor: pointer; }
+.site-staples-admin input[type="checkbox"].site-staples-switch {
+	appearance: none; -webkit-appearance: none; display: block; position: relative;
+	width: 38px; min-width: 38px; height: 23px; margin: 0; padding: 0;
+	border: 1px solid #9a91a5; border-radius: 20px; background: #d0c9d9; box-shadow: none; cursor: pointer;
+}
+.site-staples-admin input[type="checkbox"].site-staples-switch::before {
+	content: ""; position: absolute; top: 2px; left: 2px; float: none; margin: 0;
+	width: 17px; height: 17px; background: #fff; border-radius: 50%; box-shadow: 0 1px 3px #0002;
+	transition: transform .15s;
+}
+.site-staples-admin input[type="checkbox"].site-staples-switch:checked { background: var(--st-accent); border-color: var(--st-accent); }
+.site-staples-admin input[type="checkbox"].site-staples-switch:checked::before { transform: translateX(15px); }
+.site-staples-admin .site-staples-options { margin: 0 24px 0 82px; padding: 0; border: 0; min-width: 0; }
+.site-staples-admin .site-staples-options:disabled { color: var(--st-muted); }
+.site-staples-admin .site-staples-options:disabled :is(input, textarea) { cursor: not-allowed; background: #f6f4f8; color: #777080; }
+.site-staples-admin .site-staples-options-content { border-top: 1px solid #eee8f3; padding: 18px 0 21px; font-size: 14px; }
+.site-staples-admin .site-staples-options-content fieldset { margin-bottom: 12px; min-width: 0; }
+.site-staples-admin .site-staples-options-content legend { margin-bottom: 8px; font-weight: 600; }
+.site-staples-admin .site-staples-options-content label { line-height: 2.3; }
+.site-staples-admin .description { font-size: 14px; color: var(--st-muted); line-height: 1.65; margin-top: 9px; }
+.site-staples-admin input:not(.site-staples-switch), .site-staples-admin textarea { border-color: #b6a9c5; accent-color: var(--st-accent); }
+.site-staples-admin input[type="text"], .site-staples-admin input[type="number"], .site-staples-admin textarea { border-radius: 6px; max-width: 100%; color: var(--st-ink); background: #fff; }
+.site-staples-admin input[type="number"] { width: 80px; padding: 5px 9px; }
+.site-staples-admin .site-staples-cardbody { padding: 0 24px 20px 82px; }
+.site-staples-admin .site-staples-cardbody > p:first-child { margin-top: 0; }
+.site-staples-admin .site-staples-tools { margin: 0 24px 20px 82px; border: 1px solid #e8dff1; border-radius: 8px; background: #faf7fd; padding: 16px; }
+.site-staples-admin .site-staples-tools h3 { font-size: 16px; margin: 0 0 8px; color: var(--st-ink); }
+.site-staples-admin .site-staples-tools h4 { margin: 20px 0 8px; }
+.site-staples-admin .site-staples-tools p { font-size: 14px; color: var(--st-muted); }
+.site-staples-admin .site-staples-tools .widefat { table-layout: fixed; overflow-wrap: anywhere; }
+.site-staples-admin .site-staples-tools .widefat th, .site-staples-admin .site-staples-tools .widefat td { font-size: 14px; }
+.site-staples-admin .site-staples-tools input[type="file"] { max-width: 100%; }
+.site-staples-admin .site-staples-bottomnote { display: flex; align-items: flex-start; gap: 7px; font-size: 14px; color: var(--st-muted); margin: 20px 2px 28px; }
+.site-staples-admin .site-staples-bottomnote svg { width: 20px; height: 20px; }
+.site-staples-admin .site-staples-savebar { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: center; gap: 12px; padding: 17px 22px; background: #fff; border: 1px solid var(--st-line); border-bottom: 0; border-radius: 10px 10px 0 0; box-shadow: 0 -4px 20px #34104d0a; margin-top: 24px; }
+.site-staples-admin #site-staples-save-status { flex: 1; font-size: 14px; color: var(--st-muted); padding: 10px 12px; border: 1px solid transparent; border-radius: 6px; }
+.site-staples-admin #site-staples-save-status[data-dirty-state="true"] { background: #fcf9e8; border-color: #e8dba8; color: #614b0e; }
+.site-staples-admin .button { min-height: 38px; white-space: normal; border: 1px solid #b6a9c5; border-radius: 6px; padding: 4px 14px; background: #fff; color: #4d3d61; font-size: 14px; font-weight: 600; box-shadow: none; }
+.site-staples-admin .button:hover { background: var(--st-soft); color: #4d3d61; border-color: #9576b6; }
+.site-staples-admin .button-primary { background: var(--st-accent); border-color: var(--st-accent); color: #fff; }
+.site-staples-admin .button-primary:hover { background: var(--st-accent-hover); border-color: var(--st-accent-hover); color: #fff; }
+.site-staples-admin .button:disabled { background: #f3f1f6 !important; color: #777080 !important; border-color: #ded6e7 !important; cursor: default; text-shadow: none !important; }
+@media screen and (max-width: 1120px) {
+	.site-staples-admin { padding: 20px 12px 0; }
+	.site-staples-admin .site-staples-tabs-layout { grid-template-columns: 205px minmax(0, 1fr); gap: 20px; }
+}
+@media screen and (max-width: 782px) {
+	.site-staples-admin { padding: 16px 4px 0; }
+	.site-staples-admin .site-staples-tabs-layout { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+	.site-staples-admin .site-staples-nav-label, .site-staples-admin .site-staples-nav-note { display: none; }
+	.site-staples-admin .site-staples-navigation { border-bottom: 1px solid var(--st-line); padding-bottom: 12px; }
+	.site-staples-admin .site-staples-cardhead { padding: 18px 16px 10px; gap: 10px; }
+	.site-staples-admin .site-staples-options { margin-inline: 16px; }
+	.site-staples-admin .site-staples-cardbody { padding: 0 16px 18px; }
+	.site-staples-admin .site-staples-tools { margin-inline: 16px; }
+	.site-staples-admin .site-staples-savebar { padding: 14px 12px; gap: 8px; flex-wrap: wrap; }
+	.site-staples-admin #site-staples-save-status { flex-basis: 100%; }
+	.site-staples-admin .site-staples-sectionhead { align-items: flex-start; }
+	.site-staples-admin .site-staples-count { white-space: normal; }
+}
+@media (prefers-reduced-motion: reduce) { .site-staples-admin *, .site-staples-admin *::before { transition: none !important; } }
+@media (forced-colors: active) {
+	.site-staples-admin input[type="checkbox"].site-staples-switch { appearance: auto; width: 22px; min-width: 22px; height: 22px; }
+	.site-staples-admin input[type="checkbox"].site-staples-switch::before { display: none; }
+	.site-staples-admin .site-staples-navigation a[aria-selected="true"] { outline: 2px solid Highlight; }
+}
+
+.site-staples-admin :is(input, textarea, select, label, legend) { font-size: 14px; }
+.site-staples-admin :is(a, button, input, textarea):focus-visible { outline: 3px solid var(--st-accent); outline-offset: 3px; box-shadow: none; }
+.site-staples-admin :is(h2[id], h3[id], input, textarea) { scroll-margin-top: 60px; scroll-margin-bottom: 150px; }
+
+/* Override WordPress's checkmark artwork while retaining native checkbox inputs. */
+.site-staples-admin input[type="checkbox"]:not(.site-staples-switch) { position: relative; }
+.site-staples-admin input[type="checkbox"]:not(.site-staples-switch):checked {
+	background-color: var(--st-accent);
+	border-color: var(--st-accent);
+}
+.site-staples-admin input[type="checkbox"]:not(.site-staples-switch):checked::before {
+	content: ""; position: absolute; inset: 0; display: block; float: none;
+	width: 100%; height: 100%; margin: 0;
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='m4 10 4 4 8-9' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.site-staples-admin input[type="radio"]:checked { border-color: var(--st-accent); }
+.site-staples-admin input[type="radio"]:checked::before { background-color: var(--st-accent); }
+.site-staples-admin input:is([type="checkbox"], [type="radio"]):disabled { opacity: .5; }
+.site-staples-admin a { color: var(--st-accent); }
+.site-staples-admin a:hover { color: var(--st-accent-hover); }
+@media (forced-colors: active) {
+	.site-staples-admin input[type="checkbox"]:not(.site-staples-switch) { appearance: auto; }
+	.site-staples-admin input[type="checkbox"]:not(.site-staples-switch):checked::before { display: none; }
+}
+
+.site-staples-admin .site-staples-redirect-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; align-items: end; padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--st-line); }
+.site-staples-admin .site-staples-redirect-row label { display: flex; flex-direction: column; gap: 4px; min-width: 0; font-weight: 600; }
+.site-staples-admin .site-staples-redirect-row :is(input, select) { width: 100%; max-width: 100%; margin: 0; min-height: 38px; font-weight: 400; }
+.site-staples-admin .site-staples-redirect-row [data-redirect-remove] { justify-self: end; }
+.site-staples-admin .site-staples-options:disabled select { cursor: not-allowed; background-color: #f6f4f8; color: #777080; }
+@media screen and (min-width: 1400px) {
+	.site-staples-admin .site-staples-redirect-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 175px auto; }
+}
+@media screen and (max-width: 480px) {
+	.site-staples-admin .site-staples-redirect-row { grid-template-columns: minmax(0, 1fr); }
+}

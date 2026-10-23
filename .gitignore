@@ -1,0 +1,15 @@
+/vendor/
+/.phpcs-cache
+/.phpunit.cache/
+/tests/artifacts/
+
+# Local tooling, credentials and generated release artifacts.
+/.agents/
+/.codex/
+/.aws/
+/.env
+/.env.*
+!/.env.example
+/dist/
+__pycache__/
+*.pyc

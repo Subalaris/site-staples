@@ -1,0 +1,28 @@
+{
+  "name": "site-staples/site-staples",
+  "description": "Small, opt-in WordPress utilities.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": ">=8.1",
+    "ext-dom": "*",
+    "ext-fileinfo": "*",
+    "enshrined/svg-sanitize": "^1.0"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.13",
+    "wp-coding-standards/wpcs": "^3.2",
+    "phpcompatibility/phpcompatibility-wp": "^2.1"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "sort-packages": true
+  },
+  "scripts": {
+    "test": "php tests/run.php && php tests/features.php && php tests/ui.php",
+    "lint": "php tools/lint.php",
+    "package": "php tools/package.php"
+  }
+}

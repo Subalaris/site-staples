@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ruleset name="Site Staples">
+  <description>WordPress coding and security conventions for first-party PHP.</description>
+  <file>site-staples.php</file><file>uninstall.php</file><file>includes</file>
+  <arg name="extensions" value="php"/>
+  <arg name="colors"/>
+  <config name="testVersion" value="8.1-"/>
+  <rule ref="WordPress">
+    <exclude name="WordPress.Files.FileName"/>
+  </rule>
+  <rule ref="PHPCompatibilityWP"/>
+  <config name="minimum_supported_wp_version" value="6.6"/>
+  <rule ref="WordPress.WP.I18n"><properties><property name="text_domain" type="array"><element value="site-staples"/></property></properties></rule>
+</ruleset>

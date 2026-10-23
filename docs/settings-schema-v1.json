@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:site-staples:settings:1",
+  "title": "Site Staples configuration export v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "plugin",
+    "schema_version",
+    "settings"
+  ],
+  "properties": {
+    "plugin": {
+      "const": "site-staples"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "comments",
+        "svg",
+        "duplicate",
+        "media",
+        "revisions",
+        "transfer",
+        "uninstall"
+      ],
+      "properties": {
+        "comments": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "scope",
+            "post_types"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "scope": {
+              "enum": [
+                "all",
+                "selected"
+              ]
+            },
+            "post_types": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{1,64}$"
+              }
+            }
+          }
+        },
+        "svg": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "roles"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "roles": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{1,64}$"
+              }
+            }
+          }
+        },
+        "duplicate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "post_types"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "post_types": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{1,64}$"
+              }
+            }
+          }
+        },
+        "media": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            }
+          }
+        },
+        "revisions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "limit"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            }
+          }
+        },
+        "transfer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            }
+          }
+        },
+        "uninstall": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
