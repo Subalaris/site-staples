@@ -4,7 +4,7 @@ Tags: utilities, comments, svg, duplicate, revisions
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,6 +23,7 @@ No telemetry, external services or runtime Composer installation.
 See README.md for complete configuration, supported formats, integration and
 multisite limitations. See docs/VERIFICATION-1.1.md for the scope of testing; database
 and browser workflows on a live installed site remain to be verified.
+The redirects editor requires JavaScript; existing redirects work without it.
 
 == Installation ==
 1. Upload the ZIP through Plugins → Add New → Upload Plugin.
@@ -49,6 +50,11 @@ leaves unconfigured sites disabled. Network upload policies still apply. Network
 uninstall honors each site's individual configuration-removal choice.
 
 == Changelog ==
+= 1.2.0 =
+* Manage up to 10,000 local redirects with search, pagination and independent saves.
+* Automatic migration, indexed lookups, chain compilation and stale-edit protection.
+* Settings exports remain compatible; JSON import limit increased to 32 MB.
+
 = 1.1.0 =
 * Five new opt-in modules: image sizes, local redirects, maintenance, admin cleanup, columns.
 * Existing settings preserved; schema 2 export with schema 1 import compatibility.

@@ -6,7 +6,7 @@ namespace SiteStaples;
 final class Guard {
 	/** All state-changing actions are POST requests with a scoped nonce. */
 	public static function post( $nonce_action, $capability = 'manage_options' ) {
-		if ( ! current_user_can( $capability ) || 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) {
+		if ( ! current_user_can( $capability ) || 'POST' !== sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? '' ) ) ) {
 			wp_die( esc_html__( 'You are not allowed to perform this action.', 'site-staples' ), '', array( 'response' => 403 ) );
 		}
 		check_admin_referer( $nonce_action, $nonce_action . '_nonce' );

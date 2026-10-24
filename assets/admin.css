@@ -157,3 +157,77 @@ body.settings_page_site-staples { background: #fff; }
 @media screen and (max-width: 480px) {
 	.site-staples-admin .site-staples-redirect-row { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Redirect management stays separate from the main settings form. */
+.site-staples-admin .site-staples-redirect-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-block: 16px; }
+.site-staples-admin .site-staples-redirect-toolbar label { flex-basis: 100%; }
+.site-staples-admin .site-staples-redirect-pagination { display: flex; align-items: center; gap: 12px; margin-block: 16px; }
+.site-staples-admin [data-redirect-rows] { display: grid; gap: 12px; }
+.site-staples-admin [aria-busy="true"] [data-redirect-rows] { opacity: .65; }
+.site-staples-admin .site-staples-redirect-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(140px, .6fr); }
+.site-staples-admin .site-staples-redirect-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.site-staples-admin .site-staples-redirect-actions .button-link { border: 0; border-radius: 0; background: none; box-shadow: none; padding: 0; min-height: 24px; font: inherit; color: var(--st-accent); text-decoration: underline; cursor: pointer; }
+.site-staples-admin .site-staples-redirect-actions .button-link:hover { color: var(--st-accent-hover); }
+.site-staples-admin .site-staples-redirect-actions .button-link:disabled { color: #777080; text-decoration: none; cursor: default; }
+.site-staples-admin .site-staples-redirect-actions .button-link:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; }
+.site-staples-admin .site-staples-redirect-actions > span { color: var(--st-muted); }
+@media (max-width: 700px) { .site-staples-admin .site-staples-redirect-row { grid-template-columns: minmax(0, 1fr); } }
+
+/* Redirect help stays beside its subtitle and within the card on narrow screens. */
+.site-staples-admin .site-staples-feature-description { position: relative; }
+.site-staples-admin .site-staples-redirect-info { display: inline-flex; vertical-align: middle; }
+.site-staples-admin .site-staples-redirect-info > button { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 2px; border: 0; background: none; color: var(--st-muted); cursor: help; }
+.site-staples-admin .site-staples-redirect-info svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.site-staples-admin .site-staples-info-bubble { position: absolute; z-index: 20; top: 100%; left: 0; width: min(440px, 100%); box-sizing: border-box; max-height: 60vh; overflow-y: auto; padding: 14px 16px; border: 1px solid var(--st-line); border-radius: 8px; background: #fff; color: var(--st-ink); box-shadow: 0 6px 22px rgb(40 35 51 / 16%); font-size: 13px; line-height: 1.6; }
+.site-staples-admin .site-staples-info-bubble > span { display: block; }
+.site-staples-admin .site-staples-info-bubble > span + span { margin-top: 10px; }
+
+/* Read-only redirect list; editing is an explicit row action. */
+.site-staples-admin .site-staples-redirect-list { list-style: none; padding: 0; margin: 0; gap: 0; border-top: 1px solid var(--st-line); }
+.site-staples-admin .site-staples-redirect-list-heading,
+.site-staples-admin .site-staples-redirect-summary { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(140px, .6fr); gap: 12px; }
+.site-staples-admin .site-staples-redirect-list-heading { padding: 10px 12px; color: var(--st-muted); font-size: 12px; font-weight: 600; }
+.site-staples-admin .site-staples-redirect-item { margin: 0; padding: 12px; border-bottom: 1px solid var(--st-line); }
+.site-staples-admin .site-staples-redirect-item:hover,
+.site-staples-admin .site-staples-redirect-item:focus-within { background: #faf7fd; }
+.site-staples-admin .site-staples-redirect-summary > div { min-width: 0; overflow-wrap: anywhere; }
+.site-staples-admin .site-staples-redirect-row-links { min-height: 24px; opacity: 0; pointer-events: none; }
+.site-staples-admin .site-staples-redirect-item:hover .site-staples-redirect-row-links,
+.site-staples-admin .site-staples-redirect-item:focus-within .site-staples-redirect-row-links { opacity: 1; pointer-events: auto; }
+.site-staples-admin .site-staples-redirect-row-links .button-link { padding: 0; min-height: 24px; border: 0; background: none; box-shadow: none; color: var(--st-accent); text-decoration: underline; cursor: pointer; }
+.site-staples-admin .site-staples-redirect-list-label { display: none; }
+.site-staples-admin .site-staples-redirect-item .site-staples-redirect-row { margin: 0; padding: 0; border: 0; }
+@media (hover: none) { .site-staples-admin .site-staples-redirect-row-links { opacity: 1; pointer-events: auto; } }
+@media (max-width: 700px) {
+	.site-staples-admin .site-staples-redirect-list-heading { display: none; }
+	.site-staples-admin .site-staples-redirect-summary { grid-template-columns: minmax(0, 1fr); }
+	.site-staples-admin .site-staples-redirect-list-label { display: block; font-size: 12px; font-weight: 600; color: var(--st-muted); }
+}
+
+/* Compact numbered pagination with rounded chevron and page controls. */
+.site-staples-admin .site-staples-redirect-pagination { gap: 6px; flex-wrap: wrap; }
+.site-staples-admin .site-staples-redirect-pages { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.site-staples-admin .site-staples-redirect-pagination .button { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; flex: 0 0 36px; width: 36px; height: 36px; min-width: 36px; min-height: 36px; padding: 0; border-radius: 8px; font-size: 13px; font-weight: 500; }
+.site-staples-admin .site-staples-redirect-pagination .button[aria-current="page"] { background: var(--st-soft); border-color: var(--st-accent); color: var(--st-accent); font-weight: 700; }
+.site-staples-admin .site-staples-redirect-pagination svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.site-staples-admin .site-staples-redirect-pages > span { color: var(--st-muted); padding: 0 2px; }
+
+/* Give redirect search a clear input surface and consistent toolbar sizing. */
+.site-staples-admin .site-staples-redirect-toolbar { align-items: stretch; }
+.site-staples-admin .site-staples-redirect-toolbar > label { font-weight: 600; color: var(--st-ink); }
+.site-staples-admin [data-redirect-message]:empty { display: none; }
+.site-staples-admin .site-staples-redirect-search-box { display: flex; flex: 1 1 280px; min-width: 0; border-radius: 8px; }
+.site-staples-admin .site-staples-redirect-search-box:focus-within { box-shadow: 0 0 0 2px var(--st-accent); }
+.site-staples-admin #staples-redirect-search { box-sizing: border-box; flex: 1 1 auto; width: 100%; min-width: 0; height: 44px; min-height: 44px; margin: 0; padding: 0 14px; border: 1px solid #b6a9c5; border-right: 0; border-radius: 8px 0 0 8px; background: #faf7fd; color: var(--st-ink); font-size: 14px; }
+.site-staples-admin #staples-redirect-search::placeholder { color: var(--st-muted); opacity: 1; }
+.site-staples-admin #staples-redirect-search:focus { outline: 0; box-shadow: none; background: #fff; }
+.site-staples-admin .site-staples-redirect-toolbar .button,
+.site-staples-admin [data-redirect-open],
+.site-staples-admin [data-redirect-close] { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; height: 44px; min-height: 44px; margin: 0; padding: 0 14px; line-height: 1; border-radius: 8px; }
+.site-staples-admin .site-staples-redirect-search-box [data-redirect-search] { flex: 0 0 44px; width: 44px; padding: 0; border-radius: 0 8px 8px 0; background: var(--st-soft); color: var(--st-accent); }
+.site-staples-admin [data-redirect-search] svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.site-staples-admin [data-redirect-open] { gap: 6px; }
+@media (max-width: 700px) { .site-staples-admin .site-staples-redirect-search-box { flex-basis: 100%; } }
+
+.site-staples-admin .site-staples-redirect-toolbar [data-redirect-clear] { display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; border: 0; background: none; color: var(--st-accent); text-decoration: underline; cursor: pointer; }
+.site-staples-admin .site-staples-redirect-toolbar [data-redirect-clear]:disabled { color: var(--st-muted); cursor: default; }

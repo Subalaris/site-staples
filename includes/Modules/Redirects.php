@@ -4,13 +4,17 @@
 namespace SiteStaples\Modules;
 
 use SiteStaples\RedirectRules;
+use SiteStaples\RedirectStore;
 
 final class Redirects {
-	const MAX_RULES = 100;
+	const MAX_RULES = RedirectRules::MAX_RULES;
 	private $settings;
+	private $map;
 
 	public function __construct( $settings ) {
 		$this->settings = $settings;
+		// Legacy/in-memory configurations compile once; migrated sites use indexed storage.
+		$this->map = isset( $settings['generation'] ) ? null : RedirectRules::compile( $settings['rules'] );
 	}
 
 	public function register() {
@@ -33,21 +37,19 @@ final class Redirects {
 		if ( false === $path || RedirectRules::protected_path( $path ) ) {
 			return false;
 		}
-		$rules = $this->settings['rules'];
-		if ( is_wp_error( RedirectRules::validate_rules( $rules ) ) ) {
+		if ( isset( $this->settings['generation'] ) ) {
+			if ( ( $this->settings['store_home'] ?? '' ) !== RedirectStore::site_key() ) {
+				return false;
+			}
+			$rule = RedirectStore::lookup( $this->settings['generation'], $path );
+		} else {
+			$rule = is_wp_error( $this->map ) ? false : ( $this->map[ $path ] ?? false );
+		}
+		if ( ! is_array( $rule ) || ! isset( $rule['to'], $rule['status'] ) || ! in_array( $rule['status'], array( 301, 302 ), true ) || false === RedirectRules::path( $rule['to'] ) || $path === $rule['to'] || RedirectRules::protected_path( $rule['to'] ) ) {
 			return false;
 		}
-		$map = array();
-		foreach ( $rules as $rule ) {
-			$map[ RedirectRules::path( $rule['from'] ) ] = $rule;
-		}
-		if ( ! isset( $map[ $path ] ) ) {
-			return false;
-		}
-		$status = $map[ $path ]['status'];
-		while ( isset( $map[ $path ] ) ) {
-			$path = RedirectRules::path( $map[ $path ]['to'] );
-		}
+		$status = $rule['status'];
+		$path = $rule['to'];
 		$home = wp_parse_url( home_url( '/' ) );
 		$origin = $home['scheme'] . '://' . $home['host'] . ( isset( $home['port'] ) ? ':' . $home['port'] : '' );
 		return array( 'url' => $origin . $path, 'status' => $status );
@@ -58,7 +60,7 @@ final class Redirects {
 			return;
 		}
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Parsed with the strict local path grammar above.
-		$match = $this->match( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ), $_SERVER['REQUEST_METHOD'] ?? '' );
+		$match = $this->match( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ), sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? '' ) ) );
 		if ( $match ) {
 			nocache_headers();
 			if ( wp_safe_redirect( $match['url'], $match['status'], 'Site Staples' ) ) {

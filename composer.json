@@ -21,7 +21,7 @@
     "sort-packages": true
   },
   "scripts": {
-    "test": "php tests/run.php && php tests/features.php && php tests/ui.php",
+    "test": "php tests/run.php && php tests/features.php && php tests/ui.php && php tests/redirects.php",
     "lint": "php tools/lint.php",
     "package": "php tools/package.php"
   }

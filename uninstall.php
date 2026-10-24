@@ -14,8 +14,9 @@ function uninstall_site() {
 		return;
 	}
 	delete_option( 'site_staples_settings' );
+	wp_unschedule_hook( 'site_staples_redirect_retire' );
 	global $wpdb;
-	$prefixes = array( '_transient_site_staples_', '_transient_timeout_site_staples_', 'site_staples_media_lock_', 'site_staples_revision_lock_' );
+	$prefixes = array( '_transient_site_staples_', '_transient_timeout_site_staples_', 'site_staples_media_lock_', 'site_staples_revision_lock_', 'site_staples_redirect_' );
 	foreach ( $prefixes as $prefix ) {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Delete only plugin-owned options; no content tables.
 		$names = $wpdb->get_col( $wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( $prefix ) . '%' ) );
@@ -27,16 +28,16 @@ function uninstall_site() {
 
 if ( is_multisite() ) {
 	// Iterate bounded pages; each site independently chooses whether to erase its options.
-	$offset = 0;
+	$site_staples_offset = 0;
 	do {
-		$site_ids = get_sites( array( 'fields' => 'ids', 'number' => 100, 'offset' => $offset ) );
-		foreach ( $site_ids as $site_id ) {
-			switch_to_blog( $site_id );
+		$site_staples_site_ids = get_sites( array( 'fields' => 'ids', 'number' => 100, 'offset' => $site_staples_offset ) );
+		foreach ( $site_staples_site_ids as $site_staples_site_id ) {
+			switch_to_blog( $site_staples_site_id );
 			uninstall_site();
 			restore_current_blog();
 		}
-		$offset += 100;
-	} while ( count( $site_ids ) === 100 );
+		$site_staples_offset += 100;
+	} while ( count( $site_staples_site_ids ) === 100 );
 } else {
 	uninstall_site();
 }

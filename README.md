@@ -1,9 +1,10 @@
-# Site Staples 1.1.0
+# Site Staples 1.2.0
 
 A lightweight WordPress plugin with eleven practical, independently enabled modules.
 Every module starts disabled and registers its functionality only when enabled.
 Settings are under **Settings → Site Staples**. No services, telemetry, advertising,
-JavaScript framework, frontend assets, scheduled jobs, or network calls are used.
+JavaScript framework, frontend assets or network calls are used. Old redirect
+snapshots are retired by one-time WordPress cron jobs, with admin cleanup as a fallback.
 
 ## Requirements and installation
 
@@ -15,7 +16,7 @@ JavaScript framework, frontend assets, scheduled jobs, or network calls are used
 When using the source repository, run `php tools/package.php` to build the
 installable ZIP; generated archives are excluded from Git.
 
-Upload `dist/site-staples-1.1.0.zip` through **Plugins → Add New → Upload Plugin**,
+Upload `dist/site-staples-1.2.0.zip` through **Plugins → Add New → Upload Plugin**,
 install, and activate. The ZIP contains the `site-staples/` plugin folder, including
 the sanitizer. Alternatively copy the source folder into `wp-content/plugins/`.
 No Composer installation is required on the server. Enable the desired modules
@@ -136,7 +137,7 @@ still take time on a very large revisions table; deletion requests are bounded.
 
 Enable and save this module to reveal its tools. **Export settings** downloads a
 versioned JSON configuration. **Preview import** validates a `.json` file up to
-256 KB and shows changed settings before an explicit **Apply imported
+32 MB and shows changed settings before an explicit **Apply imported
 configuration** confirmation. The preview lasts 15 minutes and is specific to
 the current administrator and site. Changing settings invalidates it. An import
 can disable the import/export module itself; enable it again through settings.
@@ -169,16 +170,40 @@ that bypass native WordPress size hooks need their own integration.
 
 ### Simple redirects
 
-Enable the feature, then add redirect rows with **From path**, **To path** and a
-**Redirect type** dropdown. For example, enter `/old-page/`, `/new-page/` and
-**302 — Temporary**. Choose **Add redirect** for another rule or **Remove** to
-delete a row, then **Save changes** to apply the configuration. Blank rows are
-ignored; partially completed rows need both paths. Discard restores the original
-rows along with the rest of your configuration. Without JavaScript, fill the
-blank row and save to add a rule, or clear both paths to remove an existing rule.
+Choose **Add redirect** to open the fields. **Close** clears the draft and hides
+them; a successful save also closes the form. Enter a **Source path**,
+**Destination path** and **Redirect type**, then choose
+**Save redirect**. Search sources or destinations and browse 25 rules per page;
+pagination is available above and below the list. Rules appear as a read-only list of sources, destinations and types. Hover a row
+or focus it with the keyboard to reveal **Edit**; touch devices always show it.
+Choose **Edit** to reveal that row's save, discard and delete controls. Saving or
+discarding returns the row to its read-only view. Redirect saves are independent of **Save
+changes**, which controls feature enablement and the other plugin settings.
+Rules can be prepared while the feature is disabled. JavaScript is required to
+manage the editor; visitors do not need JavaScript to follow redirects.
+
+The editor preserves typed paths after failed or stale saves, and warns before
+leaving unsaved edits. Another tab's changes require reloading the rules before
+saving. A bounded one-rule request avoids PHP's form-input limits regardless of
+the total rule count. Up to **10,000 exact local redirects** are supported.
+
+Existing rule arrays migrate automatically, preserving enabled state and the
+original rule definitions. Snapshot publication is atomic: all validated rules
+and lookup buckets are written before the active token changes. Failed writes
+leave the previous snapshot active. Rule documents and buckets never autoload;
+ordinary settings carry only a small token. Visitors read one indexed option
+bucket, without loading all rules, validating the graph or traversing a chain.
+Validation and chain compilation run in linear time on save. Old snapshots remain
+for an hour to protect requests already in flight, then are cleaned up. Uninstall
+removes snapshots only when configuration removal is explicitly enabled.
+
+Exports continue to contain plain rule arrays in schema 2, rather than storage
+tokens. Schema 1 and 2 imports remain supported, up to 32 MB. Imports replace the
+complete rule set after preview and confirmation. If the home URL changes,
+compiled redirects fail closed until settings are saved again to rebuild them.
 
 Use 302 while testing, since browsers can retain a 301 after you disable the
-module. Up to 100 exact path rules are supported. Sources must be unique; source
+module. Sources must be unique; source
 and destination must stay on this site. Trailing slashes are treated alike;
 matching otherwise uses the path's case. Percent-encoded unreserved characters
 normalize consistently. Query strings, fragments, wildcards, absolute/external
@@ -266,8 +291,9 @@ php tools/lint.php
 WP_ROOT=/path/to/wordpress php tests/run.php
 WP_ROOT=/path/to/wordpress php tests/features.php
 php tests/ui.php
+php tests/redirects.php
 node tests/admin-tabs.cjs
-node tests/redirect-rows.cjs
+node tests/redirect-rows.cjs # Requires Playwright with Chromium installed
 php tools/package.php
 # Optional coding standards tools, after Composer access is available:
 composer install
@@ -277,9 +303,14 @@ vendor/bin/phpcs
 The test suite requires PHP DOM, Fileinfo, GD and Python 3 with SQLite. It uses
 actual WordPress hooks, core MIME helpers, GD image editing and revision helpers,
 API doubles for session/options/posts, and executes the production revision SQL
-against an isolated SQLite database. It never bootstraps or alters your site's DB.
+against an isolated SQLite database. It never bootstraps or alters your site's DB. Redirect scale and failure tests use
+isolated option doubles; the browser suite uses the production editor with a
+simulated AJAX transport.
 See [docs/VERIFICATION-1.1.md](docs/VERIFICATION-1.1.md) for actual results and remaining
-live-site checks. Tests and development dependencies are excluded from the ZIP.
+live-site checks. Tests and development dependencies are excluded from the ZIP. Run WordPress
+Plugin Check against the release ZIP, rather than the source checkout: the
+checkout intentionally contains CLI tests, packaging tools and coding-standard
+configuration. Dependency attribution ships as `THIRD-PARTY.txt` in the ZIP.
 
 ## Multisite
 

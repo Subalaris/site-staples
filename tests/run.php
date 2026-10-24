@@ -102,7 +102,7 @@ try {
 	$before_posts = $GLOBALS['test_posts'];
 	expect( is_wp_error( $transfer->apply_preview( $state, 'wrong' ) ), 'import requires its preview token' );
 	$GLOBALS['test_caps']['manage_options'] = false; expect( is_wp_error( $transfer->apply_preview( $state, 'valid' ) ), 'unauthorized import denied' ); $GLOBALS['test_caps']['manage_options'] = true;
-	add_filter( 'sanitize_option_' . Settings::OPTION, array( Settings::class, 'sanitize' ) );
+	add_filter( 'sanitize_option_' . Settings::OPTION, array( Settings::class, 'sanitize_storage' ) );
 	expect( true === $transfer->apply_preview( $state, 'valid' ) && 0 === Settings::get()['revisions']['limit'] && Settings::get()['revisions']['enabled'], 'typed imported settings persist through Settings API sanitization' );
 	expect( $before_posts === $GLOBALS['test_posts'], 'import never runs cleanup or changes content' );
 	expect( is_wp_error( $transfer->apply_preview( $state, 'valid' ) ), 'stale import preview rejected' );

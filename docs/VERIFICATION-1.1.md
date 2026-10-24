@@ -1,4 +1,39 @@
-# Verification — Site Staples 1.1.0
+# Verification — Site Staples
+
+## 1.2.0 redirect scale update — 2026-10-24
+
+The redirect manager now supports 10,000 exact local rules. Existing arrays migrate
+to immutable non-autoloaded snapshots; the main settings option stores only a token.
+A visitor lookup reads one hash bucket and never loads the full rule document.
+Graph validation and exact-chain flattening occur on save in linear time.
+
+Verification for this update:
+
+- Existing core and feature suites remain in use, including real GD operations,
+  real WordPress hooks and revision SQL executed in isolated SQLite.
+- `php tests/redirects.php` covers 10,000 unique rules and a 10,000-hop chain,
+  frontend read bounds, migration failure/retry/idempotence, paginated destination
+  search, add/edit/rename/delete, stale editors, failed snapshot publication,
+  failed bucket writes, writer contention, lease recovery, import/export above
+  256 KB, complete import replacement, nonce/capability checks, site-origin
+  binding, abandoned snapshot recovery and opt-in uninstall cleanup.
+- `tests/redirect-rows.cjs` runs the production editor and tab controller in
+  headless Chromium with a simulated AJAX transport. It checks 25-row pages,
+  search/no-results, independent saves, multiple unsaved drafts, conflicts and
+  failures retaining input, native validation, focus after saves, deletion
+  confirmation, exclusion of rule fields from the Settings API payload, and
+  horizontal overflow at 390px. Desktop and mobile screenshots were inspected.
+- PHP syntax checks and the installed Plugin Check review and direct-database
+  sniffs are run against runtime files. File-type and direct-access checks run
+  against the extracted release ZIP.
+
+These checks do not establish MySQL performance, persistent object-cache behavior,
+real browser-to-WordPress AJAX integration, screen-reader behavior or full WCAG
+conformance. Install the release ZIP on a staging WordPress site to confirm the
+migration and actual redirect response headers before deploying it to production.
+The earlier results below describe the 1.1 implementation and its then-current UI.
+
+## Historical 1.1.0 results
 
 The user reported all original v1 features working on their site before this
 release. The following checks were performed for 1.1 using PHP CLI 8.5.4 and local

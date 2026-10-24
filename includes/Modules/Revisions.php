@@ -30,19 +30,28 @@ final class Revisions {
 	 */
 	public function candidates( $watermark, $count = false, $limit = self::BATCH ) {
 		global $wpdb;
-		$select = $count ? 'COUNT(*)' : 'r.ID';
-		$sql = "SELECT $select FROM {$wpdb->posts} r INNER JOIN {$wpdb->posts} p ON p.ID = r.post_parent
+		if ( $count ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Prepared cross-revision count; reflects live content for cleanup confirmation.
+			return (int) $wpdb->get_var( $wpdb->prepare(
+				"SELECT COUNT(*) FROM {$wpdb->posts} r INNER JOIN {$wpdb->posts} p ON p.ID = r.post_parent
 			WHERE r.post_type = 'revision' AND r.post_status = 'inherit' AND r.ID <= %d
 			AND r.post_name NOT LIKE %s
 			AND (SELECT COUNT(*) FROM {$wpdb->posts} n WHERE n.post_parent = r.post_parent
 			AND n.post_type = 'revision' AND n.post_status = 'inherit' AND n.ID <= %d
-			AND n.post_name NOT LIKE %s AND n.ID > r.ID) >= %d";
-		$sql = $wpdb->prepare( $sql, $watermark, '%autosave%', $watermark, '%autosave%', $this->settings['limit'] );
-		if ( ! $count ) {
-			$sql .= $wpdb->prepare( ' ORDER BY r.ID ASC LIMIT %d', min( self::BATCH, absint( $limit ) ) );
+			AND n.post_name NOT LIKE %s AND n.ID > r.ID) >= %d",
+				$watermark, '%autosave%', $watermark, '%autosave%', $this->settings['limit']
+			) );
 		}
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery -- Bounded, prepared cross-revision query.
-		return $count ? (int) $wpdb->get_var( $sql ) : array_map( 'intval', $wpdb->get_col( $sql ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Prepared and bounded cross-revision query; candidates are revalidated before deletion.
+		return array_map( 'intval', $wpdb->get_col( $wpdb->prepare(
+			"SELECT r.ID FROM {$wpdb->posts} r INNER JOIN {$wpdb->posts} p ON p.ID = r.post_parent
+			WHERE r.post_type = 'revision' AND r.post_status = 'inherit' AND r.ID <= %d
+			AND r.post_name NOT LIKE %s
+			AND (SELECT COUNT(*) FROM {$wpdb->posts} n WHERE n.post_parent = r.post_parent
+			AND n.post_type = 'revision' AND n.post_status = 'inherit' AND n.ID <= %d
+			AND n.post_name NOT LIKE %s AND n.ID > r.ID) >= %d ORDER BY r.ID ASC LIMIT %d",
+			$watermark, '%autosave%', $watermark, '%autosave%', $this->settings['limit'], min( self::BATCH, absint( $limit ) )
+		) ) );
 	}
 
 	public function preview() {
@@ -100,8 +109,11 @@ final class Revisions {
 	public function handle_cleanup() {
 		Guard::post( 'site_staples_revision_cleanup' );
 		$state = get_transient( self::transient_key() );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Guard::post() verifies the scoped nonce above.
 		$token = isset( $_POST['preview_token'] ) && is_string( $_POST['preview_token'] ) ? sanitize_text_field( wp_unslash( $_POST['preview_token'] ) ) : '';
-		if ( ! $state || ! hash_equals( $state['token'], $token ) || '1' !== ( $_POST['confirm'] ?? '' ) ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Guard::post() verifies the scoped nonce above.
+		$confirm = isset( $_POST['confirm'] ) && is_string( $_POST['confirm'] ) ? sanitize_text_field( wp_unslash( $_POST['confirm'] ) ) : '';
+		if ( ! $state || ! hash_equals( $state['token'], $token ) || '1' !== $confirm ) {
 			Guard::result( new \WP_Error( 'confirmation', __( 'Preview cleanup and explicitly confirm before removing revisions.', 'site-staples' ) ) );
 		}
 		// Consume the token before mutating data to prevent replay/concurrent submissions.

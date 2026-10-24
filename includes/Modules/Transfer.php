@@ -8,7 +8,7 @@ use SiteStaples\Settings;
 
 final class Transfer {
 	const SCHEMA_VERSION = 2;
-	const MAX_BYTES = 262144;
+	const MAX_BYTES = 33554432;
 
 	public function __construct( $settings ) {}
 
@@ -24,7 +24,7 @@ final class Transfer {
 
 	public static function parse( $json ) {
 		if ( ! is_string( $json ) || strlen( $json ) > self::MAX_BYTES ) {
-			return new \WP_Error( 'size', __( 'Import a JSON settings file no larger than 256 KB.', 'site-staples' ) );
+			return new \WP_Error( 'size', __( 'Import a JSON settings file no larger than 32 MB.', 'site-staples' ) );
 		}
 		try {
 			$decoded = json_decode( $json, false, 16, JSON_THROW_ON_ERROR );
@@ -79,9 +79,9 @@ final class Transfer {
 
 	public function preview() {
 		Guard::post( 'site_staples_import_preview' );
-		$file = $_FILES['settings_file'] ?? array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Verified upload and strict JSON parser below.
+		$file = $_FILES['settings_file'] ?? array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- Guard::post() verifies the nonce; verified upload and strict JSON parser below.
 		if ( ! isset( $file['name'], $file['error'], $file['tmp_name'] ) || UPLOAD_ERR_OK !== $file['error'] || ! is_string( $file['name'] ) || ! is_string( $file['tmp_name'] ) || 'json' !== strtolower( pathinfo( $file['name'], PATHINFO_EXTENSION ) ) || ! is_uploaded_file( $file['tmp_name'] ) || filesize( $file['tmp_name'] ) > self::MAX_BYTES ) {
-			Guard::result( new \WP_Error( 'upload', __( 'Choose a valid .json upload no larger than 256 KB.', 'site-staples' ) ) );
+			Guard::result( new \WP_Error( 'upload', __( 'Choose a valid .json upload no larger than 32 MB.', 'site-staples' ) ) );
 		}
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local verified upload only.
 		$settings = Guard::result( self::parse( file_get_contents( $file['tmp_name'] ) ) );
@@ -98,18 +98,17 @@ final class Transfer {
 		if ( is_wp_error( $settings ) ) {
 			return $settings;
 		}
-		update_option( Settings::OPTION, $settings, false );
-		if ( Settings::get() !== $settings ) {
-			return new \WP_Error( 'save', __( 'Settings could not be saved. Preview and try again.', 'site-staples' ) );
-		}
-		return true;
+		return Settings::save( $settings, $state['before'] );
 	}
 
 	public function apply() {
 		Guard::post( 'site_staples_import_apply' );
 		$state = get_transient( self::transient_key() );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Guard::post() verifies the scoped nonce above.
 		$token = isset( $_POST['preview_token'] ) && is_string( $_POST['preview_token'] ) ? sanitize_text_field( wp_unslash( $_POST['preview_token'] ) ) : '';
-		if ( '1' !== ( $_POST['confirm'] ?? '' ) ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Guard::post() verifies the scoped nonce above.
+		$confirm = isset( $_POST['confirm'] ) && is_string( $_POST['confirm'] ) ? sanitize_text_field( wp_unslash( $_POST['confirm'] ) ) : '';
+		if ( '1' !== $confirm ) {
 			Guard::result( new \WP_Error( 'confirm', __( 'Confirm the preview before importing settings.', 'site-staples' ) ) );
 		}
 		delete_transient( self::transient_key() );

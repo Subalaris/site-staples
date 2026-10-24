@@ -6,10 +6,10 @@ its license and original Composer metadata are in the parent directory.
 
 Upstream: https://github.com/darylldoyle/svg-sanitizer/tree/1.0.0
 
-Files were retrieved from that tag's raw source. The only source transformation
-is namespace isolation: `enshrined\svgSanitize` becomes
+Files were retrieved from that tag's raw source. Runtime source changes are limited to namespace isolation: `enshrined\svgSanitize` becomes
 `SiteStaples\Vendor\SvgSanitize`. This prevents conflicts with other plugins
-using another sanitizer version. `lib/svg-sanitize/SHA256SUMS` records bundled
+using another sanitizer version. A PHPCS comment documents that the nesting
+exception carries a DOM element as context rather than rendering it. `lib/svg-sanitize/SHA256SUMS` records bundled
 file hashes. The scanner CLI is not a runtime dependency and is not distributed.
 
 The plugin applies additional restrictions *outside* the library: 2 MB input

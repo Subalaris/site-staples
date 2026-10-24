@@ -1,5 +1,6 @@
 """Run the actual prepared revision query in an isolated SQL database."""
 import json
+import re
 import sqlite3
 import sys
 payload = json.load(sys.stdin)
@@ -10,4 +11,6 @@ for name in payload.get('options', []):
     db.execute('INSERT INTO options VALUES (?)', [name])
 for post in payload['posts']:
     db.execute('INSERT INTO posts VALUES (?, ?, ?, ?, ?)', [post.get(k, 0 if k in ('ID', 'post_parent') else '') for k in ('ID', 'post_parent', 'post_type', 'post_status', 'post_name')])
-print(json.dumps([r[0] for r in db.execute(payload['sql'])]))
+# MySQL treats backslashes as escapes in LIKE patterns; SQLite requires an explicit ESCAPE.
+sql = re.sub(r"(LIKE '(?:''|[^'])*')", lambda match: match.group(0) + " ESCAPE '\\'", payload['sql'])
+print(json.dumps([r[0] for r in db.execute(sql)]))

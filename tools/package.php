@@ -16,7 +16,7 @@ if ( empty( $match[1] ) ) {
 $zip_path = $dist . '/site-staples-' . $match[1] . '.zip';
 $zip = new ZipArchive();
 $zip->open( $zip_path, ZipArchive::CREATE | ZipArchive::OVERWRITE );
-$files = array( 'site-staples.php', 'uninstall.php', 'readme.txt', 'README.md', 'CHANGELOG.md', 'LICENSE', 'THIRD-PARTY.md' );
+$files = array( 'site-staples.php', 'uninstall.php', 'readme.txt', 'README.md', 'CHANGELOG.md', 'LICENSE' );
 foreach ( array( 'includes', 'lib', 'languages', 'docs', 'assets' ) as $dir ) {
 	$iterator = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/' . $dir, FilesystemIterator::SKIP_DOTS ) );
 	foreach ( $iterator as $file ) {
@@ -30,8 +30,15 @@ foreach ( $files as $relative ) {
 	if ( ! is_file( $root . '/' . $relative ) ) {
 		throw new RuntimeException( "Missing release file: $relative" );
 	}
-	$zip->addFile( $root . '/' . $relative, 'site-staples/' . $relative );
+	if ( 'README.md' === $relative ) {
+		$readme = str_replace( 'THIRD-PARTY.md', 'THIRD-PARTY.txt', file_get_contents( $root . '/' . $relative ) );
+		$zip->addFromString( 'site-staples/' . $relative, $readme );
+	} else {
+		$zip->addFile( $root . '/' . $relative, 'site-staples/' . $relative );
+	}
 }
+// Use the permitted text extension for the dependency notice in the release.
+$zip->addFile( $root . '/THIRD-PARTY.md', 'site-staples/THIRD-PARTY.txt' );
 $zip->close();
 file_put_contents( $zip_path . '.sha256', hash_file( 'sha256', $zip_path ) . '  ' . basename( $zip_path ) . "\n" );
 echo $zip_path . "\n";

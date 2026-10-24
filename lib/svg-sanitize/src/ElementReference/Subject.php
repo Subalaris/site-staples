@@ -57,6 +57,7 @@ class Subject
     public function hasInfiniteLoop(array $subjects = [], $level = 1)
     {
         if ($level > $this->useNestingLimit) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Fourth argument is DOMElement context, not output; the exception message is a fixed literal.
             throw new \SiteStaples\Vendor\SvgSanitize\Exceptions\NestingException('Nesting level too high, aborting', 1570713498, null, $this->getElement());
         }
         if (in_array($this, $subjects, true)) {

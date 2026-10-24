@@ -27,12 +27,13 @@ foreach ( array( false, true ) as $enabled ) {
 		ui_expect( 1 === $xpath->query( '//*[@id="' . substr( $link->getAttribute( 'href' ), 1 ) . '"]' )->length, 'group link has one unique destination' );
 	}
 	ui_expect( 1 === $xpath->query( '//*[@id="staples-redirect-editor"]' )->length && 0 === $xpath->query( '//textarea[@id="staples-redirect-rules"]' )->length, 'redirects render a row editor instead of a textarea' );
+	ui_expect( 1 === $xpath->query( '//*[@id="staples-redirect-editor"]//template[@data-redirect-template]' )->length, 'redirect template belongs to its manager' );
 	ui_expect( 2 === $xpath->query( '//select[@data-redirect-field="status"]' )->length, 'redirect rows and their add template contain native type selectors' );
 	ui_expect( 12 === $xpath->query( '//article[contains(@class,"site-staples-card")]' )->length, 'all modules and data removal render as feature cards' );
 	ui_expect( 11 === $xpath->query( '//input[@role="switch" and @type="checkbox" and @form="site-staples-settings"]' )->length, 'feature switches retain native checkbox form behavior' );
 	ui_expect( 1 === $xpath->query( '//button[@type="reset" and @form="site-staples-settings"]' )->length, 'discard uses the native configuration reset' );
 	ui_expect( 0 === $xpath->query( '//details | //summary' )->length, 'feature options are always visible without disclosure controls' );
-	ui_expect( 9 === $xpath->query( '//fieldset[@data-feature-options]' )->length, 'configurable features use option fieldsets for native disabled behavior' );
+	ui_expect( 8 === $xpath->query( '//fieldset[@data-feature-options]' )->length, 'configurable features use option fieldsets for native disabled behavior' );
 	ui_expect( 0 === $xpath->query( '//*[@id="site-staples-unsaved"]' )->length, 'unsaved warning cannot shift tab content' );
 	ui_expect( 1 === $xpath->query( '//footer//span[@id="site-staples-save-status" and @role="status"]' )->length, 'save feedback has a persistent footer status' );
 

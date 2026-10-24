@@ -5,6 +5,8 @@ namespace SiteStaples;
 
 final class Settings {
 	const OPTION = 'site_staples_settings';
+	private static $writing = false;
+	private static $prepared = null;
 
 	/** Defaults intentionally disable every module. */
 	public static function defaults() {
@@ -58,9 +60,103 @@ final class Settings {
 	}
 
 	/** Read without writing or registering any feature hooks. */
-	public static function get() {
+	public static function get( $with_rules = true ) {
 		$stored = self::upgrade( get_option( self::OPTION, self::defaults() ) );
-		return is_wp_error( self::validate( $stored, false ) ) ? self::defaults() : $stored;
+		$token = $stored['redirects']['rules'] ?? null;
+		$home = $stored['redirects']['store_home'] ?? '';
+		if ( RedirectStore::valid_token( $token ) ) {
+			$document = $with_rules ? RedirectStore::document( $token ) : null;
+			$stored['redirects']['rules'] = $with_rules ? ( $document['rules'] ?? false ) : array();
+			unset( $stored['redirects']['store_home'] );
+		}
+		$result = is_wp_error( self::validate( $stored, false ) ) ? self::defaults() : $stored;
+		if ( ! $with_rules && RedirectStore::valid_token( $token ) ) {
+			$result['redirects']['generation'] = $token;
+			$result['redirects']['store_home'] = $home;
+		}
+		return $result;
+	}
+
+	/** Native Settings API saves hold the same writer lease until request shutdown. */
+	public static function sanitize_storage( $input ) {
+		if ( self::$writing || ( null !== self::$prepared && $input === self::$prepared ) ) {
+			return $input;
+		}
+		$locked = RedirectStore::lock();
+		if ( is_wp_error( $locked ) ) {
+			add_settings_error( self::OPTION, 'busy', $locked->get_error_message() );
+			return get_option( self::OPTION, self::defaults() );
+		}
+		$settings = self::sanitize( $input );
+		$storage = self::storage( $settings );
+		if ( is_wp_error( $storage ) ) {
+			add_settings_error( self::OPTION, 'redirects', $storage->get_error_message() );
+			return get_option( self::OPTION, self::defaults() );
+		}
+		if ( ! RedirectStore::owns_lock() ) {
+			RedirectStore::retire( $storage['redirects']['rules'] );
+			add_settings_error( self::OPTION, 'busy', __( 'The settings update timed out. Try saving again.', 'site-staples' ) );
+			return get_option( self::OPTION, self::defaults() );
+		}
+		self::$prepared = $storage;
+		return $storage;
+	}
+
+	/** Only the small snapshot token is kept with the ordinary settings. */
+	private static function storage( $settings ) {
+		$token = RedirectStore::stage( $settings['redirects']['rules'] );
+		if ( is_wp_error( $token ) ) {
+			return $token;
+		}
+		$settings['redirects']['rules'] = $token;
+		$settings['redirects']['store_home'] = RedirectStore::site_key();
+		return $settings;
+	}
+
+	/** Used by imports and the rule editor; stale full-configuration writes are rejected. */
+	public static function save( $settings, $expected = null ) {
+		$locked = RedirectStore::lock();
+		if ( is_wp_error( $locked ) ) {
+			return $locked;
+		}
+		try {
+			if ( null !== $expected && $expected !== self::get() ) {
+				return new \WP_Error( 'stale', __( 'Settings changed in another tab. Reload the rules or preview the import again before saving.', 'site-staples' ) );
+			}
+			$valid = self::validate( $settings );
+			if ( is_wp_error( $valid ) ) {
+				return $valid;
+			}
+			$storage = self::storage( $settings );
+			if ( is_wp_error( $storage ) ) {
+				return $storage;
+			}
+			if ( ! RedirectStore::owns_lock() ) {
+				RedirectStore::retire( $storage['redirects']['rules'] );
+				return RedirectStore::save_error();
+			}
+			$previous = RedirectStore::current_token();
+			self::$writing = true;
+			update_option( self::OPTION, $storage, false );
+			if ( get_option( self::OPTION ) !== $storage ) {
+				RedirectStore::cleanup( $storage['redirects']['rules'] );
+				return RedirectStore::save_error();
+			}
+			RedirectStore::retire( $previous );
+			return true;
+		} finally {
+			self::$writing = false;
+			RedirectStore::unlock();
+		}
+	}
+
+	/** One-time upgrade, including sites that have never reactivated the plugin. */
+	public static function migrate_redirects() {
+		$stored = self::upgrade( get_option( self::OPTION, self::defaults() ) );
+		if ( is_array( $stored['redirects']['rules'] ?? null ) && ! empty( $stored['redirects']['rules'] ) ) {
+			return self::save( $stored, $stored );
+		}
+		return true;
 	}
 
 	/** Available types exclude attachments, revisions and internal types. */
@@ -177,7 +273,7 @@ final class Settings {
 				}
 			}
 			if ( 'redirects' === $key ) {
-				$module['rules'] = isset( $source['rows_present'] ) ? self::parse_rules_rows( $source['rules_rows'] ?? array() ) : self::parse_rules_form( $source['rules_text'] ?? '' );
+				$module['rules'] = isset( $source['managed'] ) ? self::get()['redirects']['rules'] : ( isset( $source['rows_present'] ) ? self::parse_rules_rows( $source['rules_rows'] ?? array() ) : self::parse_rules_form( $source['rules_text'] ?? '' ) );
 			}
 			if ( 'comments' === $key ) {
 				$module['scope'] = $source['scope'] ?? 'all';

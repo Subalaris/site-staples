@@ -105,6 +105,7 @@ final class Duplicate {
 	}
 
 	public function handle() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- ID scopes the nonce verified by Guard::post() immediately below; no mutation before verification.
 		$id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
 		Guard::post( 'site_staples_duplicate_' . $id, 'read' );
 		$new_id = Guard::result( $this->duplicate( $id ) );

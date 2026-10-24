@@ -1,6 +1,16 @@
 # Changelog
 
-## Unreleased
+## 1.2.0 — 2026-10-24
+
+- Increased redirect capacity to 10,000 rules with linear graph validation and
+  chain compilation at save time; visitors use one indexed lookup bucket.
+- Moved redirect definitions out of ordinary settings into immutable,
+  non-autoloaded snapshots, with automatic migration and verified publication.
+- Added server pagination and search, per-rule saves, native validation,
+  independent discard/delete controls, stale-tab protection and writer leases.
+- Preserved schema 1/2 settings transfers and increased imports to 32 MB.
+- Added snapshot retirement and opt-in uninstall cleanup.
+- Fixed Plugin Check findings and kept development files outside release ZIPs.
 
 - Replaced redirect text rules with editable From/To rows, native 301/302 type
   selection and Add/Remove actions, retaining shared validation and import schema.

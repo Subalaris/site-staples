@@ -43,6 +43,7 @@ final class Media {
 
 	public function notice() {
 		$screen = get_current_screen();
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only notice flag; no state change.
 		if ( $screen && 'attachment' === $screen->id && isset( $_GET['staples_replaced'] ) ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'File replaced. Image dimensions may have changed. Cached copies may take time to refresh.', 'site-staples' ) . '</p></div>';
 		}
@@ -92,6 +93,7 @@ final class Media {
 		$uploads = wp_get_upload_dir();
 		$base = realpath( $uploads['basedir'] );
 		$real = $target ? realpath( $target ) : false;
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- Local upload transaction requires actual OS write permissions; remote filesystems are unsupported.
 		if ( ! $base || ! $real || is_link( $target ) || wp_normalize_path( $target ) !== wp_normalize_path( $real ) || ! str_starts_with( wp_normalize_path( $real ), trailingslashit( wp_normalize_path( $base ) ) ) || ! is_writable( $target ) || ! is_writable( dirname( $target ) ) ) {
 			return self::error( 'path' );
 		}
@@ -134,6 +136,7 @@ final class Media {
 				if ( ! is_file( $path ) || is_link( $path ) ) {
 					throw new \RuntimeException();
 				}
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- Local upload transaction requires actual OS write permissions; remote filesystems are unsupported.
 				if ( is_link( $destination ) || ( file_exists( $destination ) && ! is_writable( $destination ) ) ) {
 					throw new \RuntimeException();
 				}
@@ -144,6 +147,7 @@ final class Media {
 					}
 					$backups[ $destination ] = $backup;
 				}
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename is required for the commit and rollback boundary.
 				if ( ! rename( $path, $destination ) ) {
 					throw new \RuntimeException();
 				}
@@ -160,6 +164,7 @@ final class Media {
 		} catch ( \Throwable $exception ) {
 			foreach ( array_reverse( $committed ) as $destination ) {
 				if ( isset( $backups[ $destination ] ) ) {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename is required for the commit and rollback boundary.
 					rename( $backups[ $destination ], $destination );
 				} else {
 					wp_delete_file( $destination );
@@ -178,6 +183,7 @@ final class Media {
 				wp_delete_file( $path );
 			}
 			if ( is_dir( $stage ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- Remove only the empty local staging directory created by this transaction.
 				rmdir( $stage );
 			}
 			delete_option( $lock_key );
@@ -203,6 +209,7 @@ final class Media {
 		}
 		$dimensions = $editor->get_size();
 		$sizes = wp_get_registered_image_subsizes();
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Intentional WordPress core hook so existing image-size filters also apply to replacements.
 		$sizes = apply_filters( 'intermediate_image_sizes_advanced', $sizes, array( 'width' => $dimensions['width'], 'height' => $dimensions['height'] ), $id );
 		$generated = $editor->multi_resize( $sizes );
 		foreach ( $sizes as $name => $size ) {
@@ -222,10 +229,11 @@ final class Media {
 	}
 
 	public function handle() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- ID scopes the nonce verified by Guard::post() immediately below; no mutation before verification.
 		$id = isset( $_POST['attachment_id'] ) ? absint( $_POST['attachment_id'] ) : 0;
 		Guard::post( 'site_staples_replace_' . $id, 'upload_files' );
 		require_once ABSPATH . 'wp-admin/includes/image.php';
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Validated as bytes and MIME by replace().
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- Guard::post() verifies the nonce above; validated as bytes and MIME by replace().
 		Guard::result( $this->replace( $id, $_FILES['replacement'] ?? array() ) );
 		wp_safe_redirect( add_query_arg( 'staples_replaced', '1', get_edit_post_link( $id, 'raw' ) ) );
 		exit;

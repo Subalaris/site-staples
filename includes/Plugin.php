@@ -6,10 +6,12 @@ namespace SiteStaples;
 final class Plugin {
 	/** Register modules for this site. */
 	public static function boot() {
-		add_action( 'init', array( self::class, 'translations' ) );
-		$settings = Settings::get();
+		Settings::migrate_redirects();
+		add_action( 'site_staples_redirect_retire', array( RedirectStore::class, 'cleanup' ) );
+		$settings = Settings::get( false );
 		if ( is_admin() ) {
 			( new Admin() )->register();
+			( new RedirectManager() )->register();
 		}
 		$modules = array(
 			'comments'  => Modules\Comments::class,
@@ -31,11 +33,6 @@ final class Plugin {
 		}
 	}
 
-	/** Register bundled translations after WordPress initializes. */
-	public static function translations() {
-		load_plugin_textdomain( 'site-staples', false, dirname( plugin_basename( SITE_STAPLES_FILE ) ) . '/languages' );
-	}
-
 	/** Activation never changes site content or network options. */
 	public static function activate() {
 		if ( version_compare( PHP_VERSION, '8.1', '<' ) || version_compare( get_bloginfo( 'version' ), '6.6', '<' ) ) {
@@ -44,6 +41,9 @@ final class Plugin {
 		add_option( Settings::OPTION, Settings::defaults(), '', false );
 	}
 
-	/** Deactivation preserves settings and content; no scheduled jobs exist. */
-	public static function deactivate() {}
+	/** Deactivation preserves settings and content and removes pending snapshot cleanup jobs. */
+	public static function deactivate() {
+		// Retire pending snapshots on the next activation without leaving scheduled jobs.
+		wp_unschedule_hook( 'site_staples_redirect_retire' );
+	}
 }

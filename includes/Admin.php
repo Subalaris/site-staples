@@ -7,6 +7,7 @@ final class Admin {
 	public function register() {
 		add_action( 'admin_menu', array( $this, 'menu' ) );
 		add_action( 'admin_init', array( $this, 'settings' ) );
+		add_action( 'admin_init', array( RedirectStore::class, 'sweep' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'assets' ) );
 		add_filter( 'plugin_action_links_' . plugin_basename( SITE_STAPLES_FILE ), array( $this, 'links' ) );
 	}
@@ -45,6 +46,24 @@ final class Admin {
 		$url = plugin_dir_url( SITE_STAPLES_FILE ) . 'assets/';
 		wp_enqueue_style( 'site-staples-admin', $url . 'admin.css', array(), (string) filemtime( dirname( SITE_STAPLES_FILE ) . '/assets/admin.css' ) );
 		wp_enqueue_script( 'site-staples-redirects', $url . 'redirects.js', array(), (string) filemtime( dirname( SITE_STAPLES_FILE ) . '/assets/redirects.js' ), true );
+		wp_localize_script( 'site-staples-redirects', 'siteStaplesRedirects', array(
+			'working' => __( 'Loading or saving redirects…', 'site-staples' ),
+			'failed' => __( 'The request could not be confirmed. Your entered paths have been kept. Reload rules before retrying a save.', 'site-staples' ),
+			'saved' => __( 'Redirect saved.', 'site-staples' ),
+			'deleted' => __( 'Redirect deleted.', 'site-staples' ),
+			/* translators: %s: source path of the redirect to edit. */
+			'edit' => __( 'Edit redirect from %s', 'site-staples' ),
+			'empty' => __( 'No redirects yet. Add your first rule below.', 'site-staples' ),
+			'limit' => __( 'The 10,000 redirect limit has been reached. You can still edit or delete existing rules.', 'site-staples' ),
+			'noMatches' => __( 'No matching redirects. Try another search.', 'site-staples' ),
+			'discard' => __( 'Discard unsaved edits to existing redirects and load another page?', 'site-staples' ),
+			/* translators: %s: source path of the rule being deleted. */
+			'remove' => __( 'Delete the redirect from %s?', 'site-staples' ),
+			/* translators: 1: matching redirects, 2: total redirects. */
+			'summary' => __( '%1$d matching redirects of %2$d total.', 'site-staples' ),
+			/* translators: 1: current page, 2: total pages. */
+			'page' => __( 'Page %1$d of %2$d', 'site-staples' ),
+		) );
 		wp_enqueue_script( 'site-staples-admin', $url . 'admin.js', array( 'site-staples-redirects' ), (string) filemtime( dirname( SITE_STAPLES_FILE ) . '/assets/admin.js' ), true );
 	}
 
@@ -59,7 +78,7 @@ final class Admin {
 	}
 
 	public function settings() {
-		register_setting( 'site_staples', Settings::OPTION, array( 'type' => 'object', 'sanitize_callback' => array( Settings::class, 'sanitize' ), 'default' => Settings::defaults(), 'show_in_rest' => false ) );
+		register_setting( 'site_staples', Settings::OPTION, array( 'type' => 'object', 'sanitize_callback' => array( Settings::class, 'sanitize_storage' ), 'default' => Settings::defaults(), 'show_in_rest' => false ) );
 	}
 
 	private function descriptions() {
@@ -82,6 +101,7 @@ final class Admin {
 	/** Decorative line artwork from the supplied dashboard template. */
 	private function icon( $key ) {
 		$icons = array(
+			'info' => '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/>',
 			'layers' => '<path d="m12 3 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 16l9 5 9-5"/>',
 			'content' => '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',
 			'media' => '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1.5"/><path d="m3 17 6-5 4 4 3-3 5 4"/>',
@@ -95,7 +115,8 @@ final class Admin {
 		);
 		$aliases = array( 'duplicate' => 'copy', 'revisions' => 'history', 'svg' => 'shield', 'image_sizes' => 'media', 'redirects' => 'behavior', 'maintenance' => 'shield', 'admin_cleanup' => 'workspace', 'columns' => 'content', 'transfer' => 'settings', 'uninstall' => 'settings', 'site' => 'behavior', 'admin' => 'workspace', 'plugin' => 'settings' );
 		$key = $aliases[ $key ] ?? $key;
-		return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' . ( $icons[ $key ] ?? $icons['settings'] ) . '</svg>';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG markup comes exclusively from the hardcoded map above.
+		echo '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' . ( $icons[ $key ] ?? $icons['settings'] ) . '</svg>';
 	}
 
 	private function group_descriptions() {
@@ -109,11 +130,19 @@ final class Admin {
 	}
 
 	private function feature_header( $key, $enabled ) {
-		echo '<header class="site-staples-cardhead"><span class="site-staples-feature-icon">' . $this->icon( $key ) . '</span><div class="site-staples-feature-text"><div class="site-staples-titleline"><h3 id="staples-label-' . esc_attr( $key ) . '">' . esc_html( $this->labels()[ $key ] ) . '</h3>';
+		echo '<header class="site-staples-cardhead"><span class="site-staples-feature-icon">';
+		$this->icon( $key );
+		echo '</span><div class="site-staples-feature-text"><div class="site-staples-titleline"><h3 id="staples-label-' . esc_attr( $key ) . '">' . esc_html( $this->labels()[ $key ] ) . '</h3>';
 		if ( 'uninstall' !== $key ) {
 			echo '<span class="site-staples-badge" data-feature-state data-on="' . esc_attr__( 'Enabled', 'site-staples' ) . '" data-off="' . esc_attr__( 'Disabled', 'site-staples' ) . '" data-enabled="' . ( $enabled ? 'true' : 'false' ) . '">' . esc_html( $enabled ? __( 'Enabled', 'site-staples' ) : __( 'Disabled', 'site-staples' ) ) . '</span>';
 		}
-		echo '</div><p>' . esc_html( $this->descriptions()[ $key ] ) . '</p></div>';
+		echo '</div><p class="site-staples-feature-description">' . esc_html( $this->descriptions()[ $key ] );
+		if ( 'redirects' === $key ) {
+			echo ' <span class="site-staples-redirect-info"><button type="button" data-redirect-info aria-label="' . esc_attr__( 'About simple redirects', 'site-staples' ) . '" aria-describedby="staples-redirect-help" aria-expanded="false">';
+			$this->icon( 'info' );
+			echo '</button><span id="staples-redirect-help" class="site-staples-info-bubble" role="tooltip" hidden><span>' . esc_html__( 'Up to 10,000 exact local redirects. Redirect changes save separately and take effect immediately when this feature is enabled. Use Save changes below to enable or disable the feature.', 'site-staples' ) . '</span><span>' . esc_html__( 'Enter local paths such as /old-page/ and /new-page/. Start with 302 (temporary) while testing; browsers can cache 301 (permanent). No wildcards, query strings, external destinations, or protected WordPress routes. Include the site prefix on subdirectory sites. Only GET/HEAD visitors redirect; incoming query strings are discarded. Local chains resolve in one hop.', 'site-staples' ) . '</span></span></span>';
+		}
+		echo '</p></div>';
 		if ( 'uninstall' !== $key ) {
 			echo '<label class="site-staples-switch-control"><span class="screen-reader-text">' . esc_html( $this->labels()[ $key ] ) . '</span><input class="site-staples-switch" type="checkbox" role="switch" form="site-staples-settings" id="staples-' . esc_attr( $key ) . '" name="' . esc_attr( Settings::OPTION . '[' . $key . '][enabled]' ) . '" value="1" ' . checked( $enabled, true, false ) . '></label>';
 		}
@@ -146,7 +175,7 @@ final class Admin {
 
 	public function field( $args ) {
 		$key = $args['key'];
-		$settings = Settings::get();
+		$settings = Settings::get( false );
 		$this->feature_header( $key, 'uninstall' === $key ? false : $settings[ $key ]['enabled'] );
 		if ( 'uninstall' === $key ) {
 			echo '<div class="site-staples-cardbody">';
@@ -155,7 +184,7 @@ final class Admin {
 			return;
 		}
 		$value = $settings[ $key ];
-		$configurable = ! in_array( $key, array( 'media', 'transfer' ), true );
+		$configurable = ! in_array( $key, array( 'media', 'transfer', 'redirects' ), true );
 		if ( $configurable ) {
 			echo '<fieldset class="site-staples-options" data-feature-options><legend class="screen-reader-text">';
 			/* translators: %s: feature name. */
@@ -180,18 +209,19 @@ final class Admin {
 				echo '</fieldset><p class="description">' . esc_html__( 'Applies to future uploads, regeneration, and file replacement. Existing files remain. Fewer sizes can reduce responsive image choices and make visitors download larger images. Themes may fall back to the full image. 0 means an unconstrained dimension; full-size originals and WordPress big-image scaling are preserved.', 'site-staples' ) . '</p>';
 				break;
 			case 'redirects':
-				echo '<div id="staples-redirect-editor" data-max-rows="' . esc_attr( RedirectRules::MAX_RULES ) . '"><input type="hidden" form="site-staples-settings" name="' . esc_attr( Settings::OPTION . '[redirects][rows_present]' ) . '" value="1"><div data-redirect-rows>';
-				$rules = $value['rules'];
-				if ( count( $rules ) < RedirectRules::MAX_RULES ) {
-					$rules[] = array( 'from' => '', 'to' => '', 'status' => 302 );
-				}
-				foreach ( $rules as $index => $rule ) {
-					$this->redirect_row( $index, $rule );
-				}
-				echo '</div><template data-redirect-template>';
-				$this->redirect_row( '__INDEX__', array( 'from' => '', 'to' => '', 'status' => 302 ) );
-				echo '</template><button type="button" class="button" data-redirect-add hidden>' . esc_html__( 'Add redirect', 'site-staples' ) . '</button></div>';
-				echo '<p id="staples-redirect-help" class="description">' . esc_html__( 'Enter local paths such as /old-page/ and /new-page/. Start with 302 (temporary) while testing; browsers can cache 301 (permanent). Maximum 100 exact local redirects. Leave both paths blank to ignore a row. No wildcards, query strings, external destinations, or protected WordPress routes. Include the site prefix on subdirectory sites. Only GET/HEAD visitors redirect; incoming query strings are discarded. Local chains resolve in one hop.', 'site-staples' ) . '</p>';
+				echo '<input type="hidden" form="site-staples-settings" name="' . esc_attr( Settings::OPTION . '[redirects][managed]' ) . '" value="1">';
+				echo '<div id="staples-redirect-editor" data-url="' . esc_url( admin_url( 'admin-ajax.php' ) ) . '" data-nonce="' . esc_attr( wp_create_nonce( 'site_staples_redirects' ) ) . '">';
+				echo '<p><button type="button" class="button button-primary" data-redirect-open aria-expanded="false" aria-controls="staples-redirect-new"><span aria-hidden="true">+</span> ' . esc_html__( 'Add redirect', 'site-staples' ) . '</button></p><div id="staples-redirect-new" data-redirect-new hidden>';
+				$this->redirect_row( array( 'from' => '', 'to' => '', 'status' => 302 ) );
+				echo '<p><button type="button" class="button" data-redirect-close>' . esc_html__( 'Close', 'site-staples' ) . '</button></p></div>';
+				echo '<div class="site-staples-redirect-toolbar"><label for="staples-redirect-search">' . esc_html__( 'Search source or destination', 'site-staples' ) . '</label><div class="site-staples-redirect-search-box"><input id="staples-redirect-search" type="search" maxlength="1024" placeholder="' . esc_attr__( 'Search source or destination', 'site-staples' ) . '"><button type="button" class="button" data-redirect-search aria-label="' . esc_attr__( 'Search', 'site-staples' ) . '" title="' . esc_attr__( 'Search', 'site-staples' ) . '"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg></button></div><button type="button" class="button-link" data-redirect-clear hidden>' . esc_html__( 'Clear search', 'site-staples' ) . '</button><button type="button" class="button" data-redirect-reload>' . esc_html__( 'Reload rules', 'site-staples' ) . '</button></div>';
+				echo '<p data-redirect-message role="status" aria-live="polite">' . esc_html__( 'Loading redirects…', 'site-staples' ) . '</p>';
+				$this->redirect_pagination();
+				echo '<div class="site-staples-redirect-list-heading" data-redirect-heading aria-hidden="true"><span>' . esc_html__( 'Source path', 'site-staples' ) . '</span><span>' . esc_html__( 'Destination path', 'site-staples' ) . '</span><span>' . esc_html__( 'Redirect type', 'site-staples' ) . '</span></div><ul class="site-staples-redirect-list" data-redirect-rows role="list"></ul>';
+				$this->redirect_pagination();
+				echo '<template data-redirect-template>';
+				$this->redirect_row( array( 'from' => '', 'to' => '', 'status' => 302 ), true );
+				echo '</template><noscript><p>' . esc_html__( 'Enable JavaScript to search and manage redirect rules. Existing redirects continue to work.', 'site-staples' ) . '</p></noscript></div>';
 				break;
 			case 'maintenance':
 				echo '<p><label for="staples-maintenance-title">' . esc_html__( 'Visitor page title (maximum 120 characters)', 'site-staples' ) . '</label><br><input form="site-staples-settings" class="regular-text" type="text" maxlength="120" id="staples-maintenance-title" name="' . esc_attr( Settings::OPTION . '[maintenance][title]' ) . '" value="' . esc_attr( $value['title'] ) . '"></p>';
@@ -272,26 +302,40 @@ final class Admin {
 	}
 
 
-	private function redirect_row( $index, $rule ) {
-		$prefix = Settings::OPTION . '[redirects][rules_rows][' . $index . ']';
-		echo '<div class="site-staples-redirect-row" data-redirect-row>';
-		foreach ( array( 'from' => __( 'From path', 'site-staples' ), 'to' => __( 'To path', 'site-staples' ) ) as $field => $label ) {
-			echo '<label>' . esc_html( $label ) . '<input type="text" form="site-staples-settings" data-redirect-field="' . esc_attr( $field ) . '" name="' . esc_attr( $prefix . '[' . $field . ']' ) . '" value="' . esc_attr( $rule[ $field ] ) . '" placeholder="' . ( 'from' === $field ? '/old-page/' : '/new-page/' ) . '" maxlength="1024" aria-describedby="staples-redirect-help" spellcheck="false" autocomplete="off"></label>';
-		}
-		echo '<label>' . esc_html__( 'Redirect type', 'site-staples' ) . '<select form="site-staples-settings" data-redirect-field="status" name="' . esc_attr( $prefix . '[status]' ) . '">';
-		foreach ( array( 302 => __( '302 — Temporary', 'site-staples' ), 301 => __( '301 — Permanent', 'site-staples' ) ) as $status => $label ) {
-			echo '<option value="' . esc_attr( $status ) . '"' . ( $status === $rule['status'] ? ' selected' : '' ) . '>' . esc_html( $label ) . '</option>';
-		}
-		echo '</select></label><button type="button" class="button" data-redirect-remove hidden>' . esc_html__( 'Remove', 'site-staples' ) . '</button></div>';
+	private function redirect_pagination() {
+		echo '<nav class="site-staples-redirect-pagination" hidden aria-label="' . esc_attr__( 'Redirect pages', 'site-staples' ) . '"><button type="button" class="button" data-redirect-prev aria-label="' . esc_attr__( 'Previous page', 'site-staples' ) . '"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="m12 5-5 5 5 5"/></svg></button><span class="site-staples-redirect-pages" data-redirect-pages></span><button type="button" class="button" data-redirect-next aria-label="' . esc_attr__( 'Next page', 'site-staples' ) . '"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="m8 5 5 5-5 5"/></svg></button></nav>';
 	}
 
-	/** Small native POST form for an action independent of the settings save. */
+	private function redirect_row( $rule, $existing = false ) {
+		if ( $existing ) {
+			echo '<li class="site-staples-redirect-item" data-redirect-row><div class="site-staples-redirect-summary" data-redirect-read>';
+			foreach ( array( 'from' => __( 'Source path', 'site-staples' ), 'to' => __( 'Destination path', 'site-staples' ), 'status' => __( 'Redirect type', 'site-staples' ) ) as $field => $label ) {
+				echo '<div><span class="site-staples-redirect-list-label">' . esc_html( $label ) . '</span><span data-redirect-value="' . esc_attr( $field ) . '"></span>';
+				if ( 'from' === $field ) {
+					echo '<div class="site-staples-redirect-row-links"><button type="button" class="button-link" data-redirect-edit aria-expanded="false">' . esc_html__( 'Edit', 'site-staples' ) . '</button></div>';
+				}
+				echo '</div>';
+			}
+			echo '</div><div class="site-staples-redirect-row" data-redirect-edit-fields hidden>';
+		} else {
+			echo '<div class="site-staples-redirect-row" data-redirect-row>';
+		}
+		foreach ( array( 'from' => __( 'Source path', 'site-staples' ), 'to' => __( 'Destination path', 'site-staples' ) ) as $field => $label ) {
+			echo '<label>' . esc_html( $label ) . '<input type="text" data-redirect-field="' . esc_attr( $field ) . '" value="' . esc_attr( $rule[ $field ] ) . '" placeholder="' . ( 'from' === $field ? '/old-page/' : '/new-page/' ) . '" maxlength="1024" required aria-describedby="staples-redirect-help" spellcheck="false" autocomplete="off"></label>';
+		}
+		echo '<label>' . esc_html__( 'Redirect type', 'site-staples' ) . '<select data-redirect-field="status"><option value="302">' . esc_html__( '302 — Temporary', 'site-staples' ) . '</option><option value="301">' . esc_html__( '301 — Permanent', 'site-staples' ) . '</option></select></label>';
+		echo '<div class="site-staples-redirect-actions"><button type="button" class="button-link" data-redirect-save>' . esc_html__( 'Save redirect', 'site-staples' ) . '</button><span aria-hidden="true">|</span><button type="button" class="button-link" data-redirect-cancel>' . esc_html( $existing ? __( 'Cancel', 'site-staples' ) : __( 'Discard edit', 'site-staples' ) ) . '</button><span aria-hidden="true" data-redirect-delete-separator>|</span><button type="button" class="button-link" data-redirect-remove>' . esc_html__( 'Delete', 'site-staples' ) . '</button></div></div>';
+		if ( $existing ) {
+			echo '</li>';
+		}
+	}
+
 	private function action_form( $action, $label, $upload = false, $extra = null ) {
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"' . ( $upload ? ' enctype="multipart/form-data"' : '' ) . '>';
 		echo '<input type="hidden" name="action" value="' . esc_attr( $action ) . '">';
 		Guard::nonce( $action );
 		if ( $upload ) {
-			echo '<p><label for="staples-import">' . esc_html__( 'Settings JSON file (maximum 256 KB)', 'site-staples' ) . '</label><br><input id="staples-import" type="file" name="settings_file" accept=".json,application/json" required></p>';
+			echo '<p><label for="staples-import">' . esc_html__( 'Settings JSON file (maximum 32 MB)', 'site-staples' ) . '</label><br><input id="staples-import" type="file" name="settings_file" accept=".json,application/json" required></p>';
 		}
 		if ( $extra ) {
 			$extra();
@@ -304,12 +348,13 @@ final class Admin {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-		$settings = Settings::get();
+		$settings = Settings::get( false );
 		echo '<div class="wrap site-staples-admin"><h1 class="screen-reader-text">' . esc_html__( 'Site Staples', 'site-staples' ) . '</h1><header class="site-staples-brandrow"><div class="site-staples-brand"><img class="site-staples-brand-logo" src="' . esc_url( plugin_dir_url( SITE_STAPLES_FILE ) . 'assets/logo.svg' ) . '" alt="' . esc_attr__( 'Site Staples', 'site-staples' ) . '" width="975" height="124"><span class="site-staples-version">' . esc_html( SITE_STAPLES_VERSION ) . '</span></div></header>';
 		if ( is_multisite() ) {
 			echo '<div class="notice notice-info inline"><p>' . esc_html__( 'Settings apply to this site only. Network defaults and site overrides are not available. SVG uploads remain subject to network file-type policy.', 'site-staples' ) . '</p></div>';
 		}
 		$notices = array( 'imported' => __( 'Configuration imported. No cleanup or content action was performed.', 'site-staples' ), 'revision_batch' => __( 'Revision cleanup batch finished. Review the remaining count below.', 'site-staples' ) );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Allowlisted display-only notice; no state change.
 		$code = isset( $_GET['staples_notice'] ) && is_string( $_GET['staples_notice'] ) ? sanitize_key( $_GET['staples_notice'] ) : '';
 		if ( isset( $notices[ $code ] ) ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $notices[ $code ] ) . '</p></div>';
@@ -318,7 +363,9 @@ final class Admin {
 		echo '<div class="site-staples-tabs-layout">';
 		echo '<nav class="site-staples-navigation" aria-label="' . esc_attr__( 'Feature groups', 'site-staples' ) . '"><p class="site-staples-nav-label">' . esc_html__( 'Workspace', 'site-staples' ) . '</p><ul>';
 		foreach ( $this->groups() as $key => $group ) {
-			echo '<li><a id="staples-tab-' . esc_attr( $key ) . '" href="#staples-group-' . esc_attr( $key ) . '">' . $this->icon( $key ) . '<span>' . esc_html( $group['label'] ) . '</span><span class="site-staples-nav-arrow" aria-hidden="true">›</span></a></li>';
+			echo '<li><a id="staples-tab-' . esc_attr( $key ) . '" href="#staples-group-' . esc_attr( $key ) . '">';
+			$this->icon( $key );
+			echo '<span>' . esc_html( $group['label'] ) . '</span><span class="site-staples-nav-arrow" aria-hidden="true">›</span></a></li>';
 		}
 		echo '</ul><p class="site-staples-nav-note"><strong>' . esc_html__( 'Lightweight by design.', 'site-staples' ) . '</strong>' . esc_html__( 'Every feature starts disabled. You decide what belongs on your site.', 'site-staples' ) . '</p></nav><div class="site-staples-panels">';
 		// Explicit form ownership keeps configuration together without nesting action forms.
@@ -344,7 +391,9 @@ final class Admin {
 			}
 			echo '</section>';
 		}
-		echo '<p class="site-staples-bottomnote">' . $this->icon( 'shield' ) . esc_html__( 'Changes apply after saving. Cleanup always requires a separate action.', 'site-staples' ) . '</p>';
+		echo '<p class="site-staples-bottomnote">';
+		$this->icon( 'shield' );
+		echo esc_html__( 'Changes apply after saving. Cleanup always requires a separate action.', 'site-staples' ) . '</p>';
 		echo '<footer class="site-staples-savebar"><span id="site-staples-save-status" role="status" data-clean="' . esc_attr__( 'No unsaved changes', 'site-staples' ) . '" data-dirty="' . esc_attr__( 'You have unsaved changes', 'site-staples' ) . '">' . esc_html__( 'Changes apply after saving.', 'site-staples' ) . '</span><button type="reset" class="button" id="site-staples-discard" form="site-staples-settings" hidden>' . esc_html__( 'Discard', 'site-staples' ) . '</button>';
 		submit_button( __( 'Save changes', 'site-staples' ), 'primary', 'submit', false, array( 'form' => 'site-staples-settings', 'id' => 'site-staples-save' ) );
 		echo '</footer>';
@@ -414,8 +463,12 @@ final class Admin {
 		}
 		if ( 'rules' === $field ) {
 			$lines = array();
-			foreach ( $value as $rule ) {
+			foreach ( array_slice( $value, 0, 10 ) as $rule ) {
 				$lines[] = $rule['status'] . ' ' . $rule['from'] . ' → ' . $rule['to'];
+			}
+			if ( count( $value ) > 10 ) {
+				/* translators: %d: total number of redirect rules. */
+				$lines[] = sprintf( __( 'Showing the first 10 of %d rules. The import replaces the complete rule set.', 'site-staples' ), count( $value ) );
 			}
 			return $lines ? implode( '; ', $lines ) : __( 'None', 'site-staples' );
 		}

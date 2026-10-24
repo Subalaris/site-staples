@@ -65,9 +65,9 @@ function __( $s, $domain = '' ) { return $s; }
 function esc_html__( $s, $domain = '' ) { return htmlspecialchars( $s, ENT_QUOTES ); }
 function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES ); }
 function is_wp_error( $v ) { return $v instanceof WP_Error; }
-function get_option( $k, $default = false ) { return $GLOBALS['test_options'][ $k ] ?? $default; }
-function add_option( $k, $v, $deprecated = '', $autoload = null ) { if ( array_key_exists( $k, $GLOBALS['test_options'] ) ) { return false; } $GLOBALS['test_options'][ $k ] = $v; return true; }
-function update_option( $k, $v, $autoload = null ) { $v = apply_filters( 'sanitize_option_' . $k, $v ); $changed = get_option( $k ) !== $v; $GLOBALS['test_options'][ $k ] = $v; return $changed; }
+function get_option( $k, $default = false ) { $GLOBALS['test_option_reads'][] = $k; return $GLOBALS['test_options'][ $k ] ?? $default; }
+function add_option( $k, $v, $deprecated = '', $autoload = null ) { if ( isset($GLOBALS['test_fail_option_add']) && ($GLOBALS['test_fail_option_add'])($k) ) { return false; } $GLOBALS['test_autoload'][$k]=$autoload; if ( array_key_exists( $k, $GLOBALS['test_options'] ) ) { return false; } $GLOBALS['test_options'][ $k ] = $v; return true; }
+function update_option( $k, $v, $autoload = null ) { if (!empty($GLOBALS['test_fail_option_update']) && $GLOBALS['test_fail_option_update']===$k) { return false; } $GLOBALS['test_autoload'][$k]=$autoload; $v = apply_filters( 'sanitize_option_' . $k, $v ); $changed = get_option( $k ) !== $v; $GLOBALS['test_options'][ $k ] = $v; return $changed; }
 function delete_option( $k ) { unset( $GLOBALS['test_options'][ $k ] ); return true; }
 function get_bloginfo( $key ) { return '6.6'; }
 function is_admin() { return $GLOBALS['test_is_admin'] ?? true; }
@@ -130,6 +130,13 @@ class TestDatabase {
 		$p = proc_open( array( 'python3', __DIR__ . '/sql.py' ), array( 0 => array( 'pipe', 'r' ), 1 => array( 'pipe', 'w' ), 2 => array( 'pipe', 'w' ) ), $pipes );
 		fwrite( $pipes[0], json_encode( $payload ) ); fclose( $pipes[0] ); $out = stream_get_contents( $pipes[1] ); fclose( $pipes[1] ); $err = stream_get_contents( $pipes[2] ); fclose( $pipes[2] ); if ( proc_close( $p ) ) { throw new RuntimeException( $err ); } return json_decode( $out, true );
 	}
+	public function query( $sql ) {
+		if ( preg_match( "/^DELETE FROM options WHERE option_name = '([^']+)' AND option_value = '([^']+)'$/", $sql, $matches ) ) {
+			if ( ($GLOBALS['test_options'][$matches[1]] ?? null) !== $matches[2] ) { return 0; }
+			unset($GLOBALS['test_options'][$matches[1]]); return 1;
+		}
+		throw new RuntimeException('Unexpected test query: ' . $sql);
+	}
 	public function get_var( $sql ) { return $this->get_col( $sql )[0] ?? null; }
 }
 $GLOBALS['wpdb'] = new TestDatabase();
@@ -149,3 +156,10 @@ function is_trackback() { return false; }
 function wp_safe_redirect( $url, $status = 302, $by = '' ) { $GLOBALS['test_redirect'] = array( $url, $status, $by ); return false; }
 
 function admin_url( $path ) { return 'https://example.test/wp-admin/' . $path; }
+
+function wp_cache_delete( ...$args ) { return true; }
+function wp_create_nonce( $action ) { return 'fixture-nonce'; }
+function wp_schedule_single_event( $time, $hook, $args = array() ) { $GLOBALS['test_events'][$hook][serialize($args)] = array($time,$args); return true; }
+function wp_next_scheduled( $hook, $args = array() ) { return $GLOBALS['test_events'][$hook][serialize($args)][0] ?? false; }
+function wp_clear_scheduled_hook( $hook, $args = array() ) { unset($GLOBALS['test_events'][$hook][serialize($args)]); return true; }
+function wp_unschedule_hook( $hook ) { unset($GLOBALS['test_events'][$hook]); return true; }

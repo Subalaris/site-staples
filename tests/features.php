@@ -104,7 +104,7 @@ try {
 		array( array( 'from' => '/old', 'to' => 'https://elsewhere.test', 'status' => '302' ) ),
 		array( array( 'from' => '/loop', 'to' => '/loop', 'status' => '302' ) ),
 		array( array( 'from' => '/same', 'to' => '/new', 'status' => '302' ), array( 'from' => '/same', 'to' => '/other', 'status' => '301' ) ),
-		array_fill( 0, 101, array( 'from' => '', 'to' => '', 'status' => '302' ) ),
+		array_fill( 0, RedirectRules::MAX_RULES + 1, array( 'from' => '', 'to' => '', 'status' => '302' ) ),
 	) as $invalid_rows ) {
 		$invalid_form = $row_form; $invalid_form['redirects']['rules_rows'] = $invalid_rows;
 		check_feature( $clean === Settings::sanitize($invalid_form), 'invalid redirect rows preserve saved configuration' );
