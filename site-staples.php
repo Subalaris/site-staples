@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Site Staples
  * Description: Practical, opt-in utilities for content, media, redirects, maintenance, and WordPress administration.
- * Version: 1.2.0
+ * Version: 1.3.1
  * Requires at least: 6.6
  * Requires PHP: 8.1
  * Author: Marko Moguljak
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'SITE_STAPLES_FILE', __FILE__ );
-define( 'SITE_STAPLES_VERSION', '1.2.0' );
+define( 'SITE_STAPLES_VERSION', '1.3.1' );
 require_once __DIR__ . '/includes/autoload.php';
 
 register_activation_hook( __FILE__, array( Plugin::class, 'activate' ) );

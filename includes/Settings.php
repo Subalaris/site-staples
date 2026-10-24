@@ -19,7 +19,7 @@ final class Settings {
 			'transfer'  => array( 'enabled' => false ),
 			'image_sizes' => array( 'enabled' => false, 'disabled_sizes' => array() ),
 			'redirects' => array( 'enabled' => false, 'rules' => array() ),
-			'maintenance' => array( 'enabled' => false, 'roles' => array(), 'title' => '', 'message' => '' ),
+			'maintenance' => array( 'enabled' => false, 'roles' => array(), 'title' => '', 'message' => '', 'page_id' => 0 ),
 			'admin_cleanup' => array( 'enabled' => false, 'roles' => array(), 'widgets' => array(), 'toolbar' => array() ),
 			'columns' => array( 'enabled' => false, 'post_types' => array( 'post', 'page' ), 'show_id' => true, 'show_thumbnail' => true, 'show_modified' => false ),
 			'uninstall' => false,
@@ -31,11 +31,27 @@ final class Settings {
 		return array_diff_key( self::defaults(), array_fill_keys( array( 'image_sizes', 'redirects', 'maintenance', 'admin_cleanup', 'columns' ), true ) );
 	}
 
-	/** Only a complete, exact v1 configuration is eligible for the defaults upgrade. */
+	/** Schema 2 predates the custom maintenance page option. */
+	public static function v2_defaults() {
+		$defaults = self::defaults();
+		unset( $defaults['maintenance']['page_id'] );
+		return $defaults;
+	}
+
+	public static function maintenance_page( $id ) {
+		$page = $id > 0 ? get_post( $id ) : null;
+		return $page && 'page' === $page->post_type && 'publish' === $page->post_status && '' === (string) ( $page->post_password ?? '' ) ? $page : false;
+	}
+
+	/** Upgrade only recognized older shapes; validation still rejects malformed settings. */
 	public static function upgrade( $input ) {
 		$old = self::legacy_defaults();
 		if ( is_array( $input ) && ! array_diff_key( $input, $old ) && ! array_diff_key( $old, $input ) ) {
 			return array_replace( self::defaults(), $input );
+		}
+		$v2 = self::v2_defaults();
+		if ( is_array( $input ) && ! array_diff_key( $input, $v2 ) && ! array_diff_key( $v2, $input ) && is_array( $input['maintenance'] ) && ! array_diff_key( $input['maintenance'], $v2['maintenance'] ) && ! array_diff_key( $v2['maintenance'], $input['maintenance'] ) ) {
+			$input['maintenance']['page_id'] = 0;
 		}
 		return $input;
 	}
@@ -227,6 +243,10 @@ final class Settings {
 				return self::invalid( 'maintenance' );
 			}
 		}
+		$page_id = $input['maintenance']['page_id'];
+		if ( ! is_int( $page_id ) || $page_id < 0 || ( $check_registered && $page_id > 0 && ! self::maintenance_page( $page_id ) ) ) {
+			return new \WP_Error( 'maintenance_page', __( 'Choose a published page without a password, or use the default maintenance message.', 'site-staples' ) );
+		}
 		$rules = $input['redirects']['rules'];
 		if ( array() !== $rules && is_wp_error( RedirectRules::validate_rules( $rules, $check_registered ) ) ) {
 			return RedirectRules::error();
@@ -268,6 +288,8 @@ final class Settings {
 				}
 			}
 			if ( 'maintenance' === $key ) {
+				$raw_page = $source['page_id'] ?? '0';
+				$module['page_id'] = is_string( $raw_page ) && preg_match( '/^\d{1,18}$/D', $raw_page ) ? (int) $raw_page : -1;
 				foreach ( array( 'title', 'message' ) as $field ) {
 					$module[ $field ] = isset( $source[ $field ] ) && is_string( $source[ $field ] ) ? sanitize_textarea_field( $source[ $field ] ) : '';
 				}

@@ -7,7 +7,7 @@ use SiteStaples\Guard;
 use SiteStaples\Settings;
 
 final class Transfer {
-	const SCHEMA_VERSION = 2;
+	const SCHEMA_VERSION = 3;
 	const MAX_BYTES = 33554432;
 
 	public function __construct( $settings ) {}
@@ -33,14 +33,14 @@ final class Transfer {
 			return new \WP_Error( 'json', __( 'The file is not valid JSON or is nested too deeply.', 'site-staples' ) );
 		}
 		$keys = array( 'plugin', 'schema_version', 'settings' );
-		if ( ! is_array( $doc ) || count( $doc ) !== 3 || array_diff( array_keys( $doc ), $keys ) || 'site-staples' !== ( $doc['plugin'] ?? null ) || ! in_array( $doc['schema_version'] ?? null, array( 1, self::SCHEMA_VERSION ), true ) ) {
-			return new \WP_Error( 'version', __( 'This is not a supported Site Staples settings export (schema version 1 or 2).', 'site-staples' ) );
+		if ( ! is_array( $doc ) || count( $doc ) !== 3 || array_diff( array_keys( $doc ), $keys ) || 'site-staples' !== ( $doc['plugin'] ?? null ) || ! in_array( $doc['schema_version'] ?? null, array( 1, 2, self::SCHEMA_VERSION ), true ) ) {
+			return new \WP_Error( 'version', __( 'This is not a supported Site Staples settings export (schema version 1, 2 or 3).', 'site-staples' ) );
 		}
 		// Preserve JSON object/array distinctions before converting to PHP arrays.
 		if ( ! $doc['settings'] instanceof \stdClass ) {
 			return new \WP_Error( 'shape', __( 'Settings must be a JSON object; role and post-type lists must be JSON arrays.', 'site-staples' ) );
 		}
-		$defaults = 1 === $doc['schema_version'] ? Settings::legacy_defaults() : Settings::defaults();
+		$defaults = 1 === $doc['schema_version'] ? Settings::legacy_defaults() : ( 2 === $doc['schema_version'] ? Settings::v2_defaults() : Settings::defaults() );
 		if ( array_diff_key( get_object_vars( $doc['settings'] ), $defaults ) || array_diff_key( $defaults, get_object_vars( $doc['settings'] ) ) ) {
 			return new \WP_Error( 'shape', __( 'Configuration keys do not match the declared schema version.', 'site-staples' ) );
 		}
@@ -49,7 +49,7 @@ final class Transfer {
 				continue;
 			}
 			$module = $doc['settings']->$key ?? null;
-			if ( ! $module instanceof \stdClass ) {
+			if ( ! $module instanceof \stdClass || array_diff_key( get_object_vars( $module ), $default ) || array_diff_key( $default, get_object_vars( $module ) ) ) {
 				return new \WP_Error( 'shape', __( 'Each feature configuration must be a JSON object.', 'site-staples' ) );
 			}
 			foreach ( array( 'roles', 'post_types', 'disabled_sizes', 'widgets', 'toolbar', 'rules' ) as $list ) {
@@ -59,7 +59,7 @@ final class Transfer {
 			}
 		}
 		$configuration = json_decode( $json, true, 16, JSON_THROW_ON_ERROR );
-		return Settings::validate( 1 === $doc['schema_version'] ? Settings::upgrade( $configuration['settings'] ) : $configuration['settings'] );
+		return Settings::validate( self::SCHEMA_VERSION !== $doc['schema_version'] ? Settings::upgrade( $configuration['settings'] ) : $configuration['settings'] );
 	}
 
 	public static function transient_key() {
@@ -70,7 +70,7 @@ final class Transfer {
 		Guard::post( 'site_staples_export' );
 		nocache_headers();
 		header( 'Content-Type: application/json; charset=utf-8' );
-		header( 'Content-Disposition: attachment; filename="site-staples-settings-v2.json"' );
+		header( 'Content-Disposition: attachment; filename="site-staples-settings-v3.json"' );
 		header( 'X-Content-Type-Options: nosniff' );
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON download, not HTML.
 		echo wp_json_encode( self::document(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );

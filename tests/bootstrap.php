@@ -163,3 +163,14 @@ function wp_schedule_single_event( $time, $hook, $args = array() ) { $GLOBALS['t
 function wp_next_scheduled( $hook, $args = array() ) { return $GLOBALS['test_events'][$hook][serialize($args)][0] ?? false; }
 function wp_clear_scheduled_hook( $hook, $args = array() ) { unset($GLOBALS['test_events'][$hook][serialize($args)]); return true; }
 function wp_unschedule_hook( $hook ) { unset($GLOBALS['test_events'][$hook]); return true; }
+
+function get_posts( $args ) {
+	$posts = array_values(array_filter($GLOBALS['test_posts'], static function($post) use($args) {
+		return $post->post_type===($args['post_type']??'post') && $post->post_status===($args['post_status']??'publish') && (!isset($args['has_password']) || (bool)$args['has_password']===('' !== (string)($post->post_password ?? '')));
+	}));
+	usort($posts,static fn($a,$b)=>strcmp($a->post_title,$b->post_title));
+	return $posts;
+}
+function status_header( $code ) { $GLOBALS['test_status']=$code; }
+
+function show_admin_bar( $show ) { $GLOBALS['test_show_admin_bar']=$show; }

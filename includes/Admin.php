@@ -184,9 +184,13 @@ final class Admin {
 			return;
 		}
 		$value = $settings[ $key ];
-		$configurable = ! in_array( $key, array( 'media', 'transfer', 'redirects' ), true );
+		if ( 'redirects' === $key ) {
+			// Keep this outside the disabled fieldset so non-JavaScript saves retain all rules.
+			echo '<input type="hidden" form="site-staples-settings" name="' . esc_attr( Settings::OPTION . '[redirects][managed]' ) . '" value="1">';
+		}
+		$configurable = ! in_array( $key, array( 'media', 'transfer' ), true );
 		if ( $configurable ) {
-			echo '<fieldset class="site-staples-options" data-feature-options><legend class="screen-reader-text">';
+			echo '<fieldset class="site-staples-options" data-feature-options' . ( 'redirects' === $key && ! $value['enabled'] ? ' disabled' : '' ) . '><legend class="screen-reader-text">';
 			/* translators: %s: feature name. */
 			echo esc_html( sprintf( __( 'Options for %s', 'site-staples' ), $this->labels()[ $key ] ) ) . '</legend><div class="site-staples-options-content">';
 		}
@@ -209,7 +213,6 @@ final class Admin {
 				echo '</fieldset><p class="description">' . esc_html__( 'Applies to future uploads, regeneration, and file replacement. Existing files remain. Fewer sizes can reduce responsive image choices and make visitors download larger images. Themes may fall back to the full image. 0 means an unconstrained dimension; full-size originals and WordPress big-image scaling are preserved.', 'site-staples' ) . '</p>';
 				break;
 			case 'redirects':
-				echo '<input type="hidden" form="site-staples-settings" name="' . esc_attr( Settings::OPTION . '[redirects][managed]' ) . '" value="1">';
 				echo '<div id="staples-redirect-editor" data-url="' . esc_url( admin_url( 'admin-ajax.php' ) ) . '" data-nonce="' . esc_attr( wp_create_nonce( 'site_staples_redirects' ) ) . '">';
 				echo '<p><button type="button" class="button button-primary" data-redirect-open aria-expanded="false" aria-controls="staples-redirect-new"><span aria-hidden="true">+</span> ' . esc_html__( 'Add redirect', 'site-staples' ) . '</button></p><div id="staples-redirect-new" data-redirect-new hidden>';
 				$this->redirect_row( array( 'from' => '', 'to' => '', 'status' => 302 ) );
@@ -224,6 +227,21 @@ final class Admin {
 				echo '</template><noscript><p>' . esc_html__( 'Enable JavaScript to search and manage redirect rules. Existing redirects continue to work.', 'site-staples' ) . '</p></noscript></div>';
 				break;
 			case 'maintenance':
+				$pages = get_posts( array( 'post_type' => 'page', 'post_status' => 'publish', 'has_password' => false, 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC' ) );
+				$selected_page = Settings::maintenance_page( $value['page_id'] );
+				echo '<p><label for="staples-maintenance-page">' . esc_html__( 'Maintenance page', 'site-staples' ) . '</label><br><select form="site-staples-settings" id="staples-maintenance-page" name="' . esc_attr( Settings::OPTION . '[maintenance][page_id]' ) . '" aria-describedby="staples-maintenance-page-help"><option value="0">' . esc_html__( 'Use default maintenance message', 'site-staples' ) . '</option>';
+				foreach ( $pages as $page ) {
+					if ( ! Settings::maintenance_page( $page->ID ) ) {
+						continue;
+					}
+					/* translators: %d: page ID when the page has no title. */
+					$title = $page->post_title ?: sprintf( __( 'Untitled page (#%d)', 'site-staples' ), $page->ID );
+					echo '<option value="' . esc_attr( $page->ID ) . '" ' . selected( $selected_page ? $selected_page->ID : 0, $page->ID, false ) . '>' . esc_html( $title ) . '</option>';
+				}
+				echo '</select> <button type="button" class="button-link" id="staples-maintenance-page-clear" hidden>' . esc_html__( 'Remove selection', 'site-staples' ) . '</button></p><p id="staples-maintenance-page-help" class="description">' . esc_html__( 'Create and publish a page under Pages, then select it here. Only published pages without a password are listed. It displays the page content without the theme menu, header or footer, at the visitor’s current URL with HTTP 503. Choose the default option or Remove selection, then Save changes to return to the default message without deleting the page. The title and message below are also the fallback if the page becomes unavailable.', 'site-staples' ) . '</p>';
+				if ( $value['page_id'] && ! $selected_page ) {
+					echo '<p class="description">' . esc_html__( 'The previously selected page is no longer available. Visitors receive the default message. Choose another page or save to use the default message.', 'site-staples' ) . '</p>';
+				}
 				echo '<p><label for="staples-maintenance-title">' . esc_html__( 'Visitor page title (maximum 120 characters)', 'site-staples' ) . '</label><br><input form="site-staples-settings" class="regular-text" type="text" maxlength="120" id="staples-maintenance-title" name="' . esc_attr( Settings::OPTION . '[maintenance][title]' ) . '" value="' . esc_attr( $value['title'] ) . '"></p>';
 				echo '<p><label for="staples-maintenance-message">' . esc_html__( 'Visitor message (plain text, maximum 2000 characters)', 'site-staples' ) . '</label><br><textarea form="site-staples-settings" class="large-text" rows="3" maxlength="2000" id="staples-maintenance-message" name="' . esc_attr( Settings::OPTION . '[maintenance][message]' ) . '">' . esc_textarea( $value['message'] ) . '</textarea></p>';
 				$this->roles( 'maintenance', $value['roles'], __( 'Additional roles that can view the site', 'site-staples' ) );
@@ -438,7 +456,7 @@ final class Admin {
 			}
 			$before = is_array( $current[ $key ] ) ? $current[ $key ] : array( 'uninstall' => $current[ $key ] );
 			$after = is_array( $value ) ? $value : array( 'uninstall' => $value );
-			$fields = array( 'enabled' => __( 'Enabled', 'site-staples' ), 'scope' => __( 'Scope', 'site-staples' ), 'roles' => __( 'Additional roles', 'site-staples' ), 'post_types' => __( 'Post types', 'site-staples' ), 'limit' => __( 'Maximum revisions', 'site-staples' ), 'uninstall' => __( 'Remove configuration on uninstall', 'site-staples' ), 'disabled_sizes' => __( 'Sizes not generated', 'site-staples' ), 'rules' => __( 'Redirect rules', 'site-staples' ), 'widgets' => __( 'Hidden dashboard widgets', 'site-staples' ), 'toolbar' => __( 'Hidden toolbar items', 'site-staples' ), 'title' => __( 'Visitor title', 'site-staples' ), 'message' => __( 'Visitor message', 'site-staples' ), 'show_id' => __( 'Content ID', 'site-staples' ), 'show_thumbnail' => __( 'Featured image', 'site-staples' ), 'show_modified' => __( 'Last modified', 'site-staples' ) );
+			$fields = array( 'enabled' => __( 'Enabled', 'site-staples' ), 'scope' => __( 'Scope', 'site-staples' ), 'roles' => __( 'Additional roles', 'site-staples' ), 'post_types' => __( 'Post types', 'site-staples' ), 'limit' => __( 'Maximum revisions', 'site-staples' ), 'uninstall' => __( 'Remove configuration on uninstall', 'site-staples' ), 'disabled_sizes' => __( 'Sizes not generated', 'site-staples' ), 'rules' => __( 'Redirect rules', 'site-staples' ), 'widgets' => __( 'Hidden dashboard widgets', 'site-staples' ), 'toolbar' => __( 'Hidden toolbar items', 'site-staples' ), 'title' => __( 'Visitor title', 'site-staples' ), 'message' => __( 'Visitor message', 'site-staples' ), 'page_id' => __( 'Maintenance page', 'site-staples' ), 'show_id' => __( 'Content ID', 'site-staples' ), 'show_thumbnail' => __( 'Featured image', 'site-staples' ), 'show_modified' => __( 'Last modified', 'site-staples' ) );
 			foreach ( $after as $field => $field_value ) {
 				if ( $before[ $field ] !== $field_value ) {
 					echo '<tr><th scope="row">' . esc_html( $this->labels()[ $key ] . ': ' . $fields[ $field ] ) . '</th><td>' . esc_html( $this->value_label( $before[ $field ], $field ) ) . '</td><td>' . esc_html( $this->value_label( $field_value, $field ) ) . '</td></tr>';
@@ -460,6 +478,13 @@ final class Admin {
 		}
 		if ( 'scope' === $field ) {
 			return 'all' === $value ? __( 'Entire site', 'site-staples' ) : __( 'Selected post types', 'site-staples' );
+		}
+		if ( 'page_id' === $field ) {
+			$page = Settings::maintenance_page( $value );
+			if ( ! $page ) {
+				return __( 'Use default maintenance message', 'site-staples' );
+			}
+			return $page->post_title . ' (#' . $page->ID . ')';
 		}
 		if ( 'rules' === $field ) {
 			$lines = array();

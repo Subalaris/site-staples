@@ -53,8 +53,8 @@ try {
 	check_feature( $upgraded === Transfer::parse(wp_json_encode($doc)), 'complete legacy exports upgrade without activating new modules' );
 	$bad=$doc; $bad['settings']['maintenance']=Settings::defaults()['maintenance']; check_feature( is_wp_error(Transfer::parse(wp_json_encode($bad))), 'version 1 imports cannot smuggle version 2 fields' );
 	$bad=$doc; unset($bad['settings']['svg']); check_feature( is_wp_error(Transfer::parse(wp_json_encode($bad))), 'partial legacy export rejected' );
-	$doc['schema_version']=2; $doc['settings']=$upgraded;
-	check_feature( $upgraded === Transfer::parse(wp_json_encode($doc)), 'version 2 configuration round trips' );
+	$doc['schema_version']=Transfer::SCHEMA_VERSION; $doc['settings']=$upgraded;
+	check_feature( $upgraded === Transfer::parse(wp_json_encode($doc)), 'current configuration round trips' );
 	$bad=$doc; $bad['settings']['redirects']['rules']=(object)array(); check_feature( is_wp_error(Transfer::parse(wp_json_encode($bad))), 'redirect rules require a JSON array' );
 	$bad=$doc; $bad['settings']['columns']['show_id']='true'; check_feature( is_wp_error(Transfer::parse(wp_json_encode($bad))), 'column flags require booleans' );
 	$bad=$doc; $bad['settings']['maintenance']['message']='<script>alert(1)</script>'; check_feature( is_wp_error(Transfer::parse(wp_json_encode($bad))), 'imported maintenance text must be plain text' );

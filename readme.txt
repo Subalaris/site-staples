@@ -4,7 +4,7 @@ Tags: utilities, comments, svg, duplicate, revisions
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.2.0
+Stable tag: 1.3.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,15 @@ leaves unconfigured sites disabled. Network upload policies still apply. Network
 uninstall honors each site's individual configuration-removal choice.
 
 == Changelog ==
+= 1.3.1 =
+* Automatically hide theme menus, headers and footers on custom maintenance pages.
+* Keep content filters and WordPress asset hooks for page styles and scripts.
+
+= 1.3.0 =
+* Select a published page for custom coming-soon or maintenance content.
+* Retain HTTP 503, role bypasses and safe fallback messages.
+* Schema 3 exports include the selected page; schema 1/2 imports remain supported.
+
 = 1.2.0 =
 * Manage up to 10,000 local redirects with search, pagination and independent saves.
 * Automatic migration, indexed lookups, chain compilation and stale-edit protection.

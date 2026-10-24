@@ -231,3 +231,10 @@ body.settings_page_site-staples { background: #fff; }
 
 .site-staples-admin .site-staples-redirect-toolbar [data-redirect-clear] { display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; border: 0; background: none; color: var(--st-accent); text-decoration: underline; cursor: pointer; }
 .site-staples-admin .site-staples-redirect-toolbar [data-redirect-clear]:disabled { color: var(--st-muted); cursor: default; }
+
+.site-staples-admin #staples-maintenance-page { box-sizing: border-box; width: 100%; max-width: 440px; min-height: 38px; padding: 5px 28px 5px 9px; border: 1px solid #b6a9c5; border-radius: 6px; background-color: #fff; color: var(--st-ink); font-size: 14px; }
+
+.site-staples-admin #staples-maintenance-page-clear { margin-left: 8px; min-height: 32px; color: var(--st-accent); text-decoration: underline; }
+
+.site-staples-admin .site-staples-options:disabled #staples-redirect-search { background: #f6f4f8; color: var(--st-muted); cursor: not-allowed; }
+.site-staples-admin .site-staples-options:disabled .site-staples-redirect-row-links .button-link { color: var(--st-muted); text-decoration: none; cursor: not-allowed; }

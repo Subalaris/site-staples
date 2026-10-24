@@ -1,5 +1,31 @@
 # Verification — Site Staples
 
+## 1.3.1 maintenance canvas — 2026-10-24
+
+The maintenance page now uses a bundled content-only canvas instead of the theme's
+page template. The maintenance tests verify that it does not call theme header or
+footer templates, preserves deliberately embedded content headers/footers, runs
+content filters and head/body/footer hooks, and renders content early enough for
+blocks/builders to enqueue assets before the head. The blocked visitor's WordPress
+admin bar is disabled. Existing bypass and HTTP 503 tests continue to apply.
+Theme-specific/page-builder appearance still needs validation on the target site.
+
+## 1.3.0 custom maintenance pages — 2026-10-24
+
+`tests/maintenance.php` exercises public-page selection, exact older schema
+upgrades, schema 1/2/3 compatibility, persisted IDs, strict import validation,
+private/password-protected/unpublished/deleted selections, fallback messages,
+administrator and role bypasses, selected main-query context, preservation of
+visitor URLs, canonical redirect suppression, Simple redirects precedence,
+template selection and HTTP 503 reassertion. It also renders the native admin
+selector and checks that only public unprotected pages can be chosen.
+
+These checks use the existing isolated harness with a WP_Query execution double
+and real WordPress hooks. They do not establish compatibility with a particular
+theme or page builder. Verify the selected page while logged out on the target
+site, including missing URLs and any dynamic blocks, before enabling maintenance
+on a production site. REST requests from visitors continue to receive 503.
+
 ## 1.2.0 redirect scale update — 2026-10-24
 
 The redirect manager now supports 10,000 exact local rules. Existing arrays migrate

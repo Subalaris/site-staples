@@ -56,7 +56,7 @@ final class Redirects {
 	}
 
 	public function redirect() {
-		if ( is_admin() || is_preview() || is_feed() || is_trackback() ) {
+		if ( did_action( 'site_staples_maintenance_page' ) || is_admin() || is_preview() || is_feed() || is_trackback() ) {
 			return;
 		}
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Parsed with the strict local path grammar above.

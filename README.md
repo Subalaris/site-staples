@@ -1,4 +1,4 @@
-# Site Staples 1.2.0
+# Site Staples 1.3.1
 
 A lightweight WordPress plugin with eleven practical, independently enabled modules.
 Every module starts disabled and registers its functionality only when enabled.
@@ -16,7 +16,7 @@ snapshots are retired by one-time WordPress cron jobs, with admin cleanup as a f
 When using the source repository, run `php tools/package.php` to build the
 installable ZIP; generated archives are excluded from Git.
 
-Upload `dist/site-staples-1.2.0.zip` through **Plugins → Add New → Upload Plugin**,
+Upload `dist/site-staples-1.3.1.zip` through **Plugins → Add New → Upload Plugin**,
 install, and activate. The ZIP contains the `site-staples/` plugin folder, including
 the sanitizer. Alternatively copy the source folder into `wp-content/plugins/`.
 No Composer installation is required on the server. Enable the desired modules
@@ -28,7 +28,7 @@ and save. Settings and content are preserved on activation and deactivation.
 
 Existing options are read without rewriting or resetting your configured modules.
 All five new modules start disabled. Saving persists the expanded configuration.
-Exports now use schema version 2; complete schema version 1 files still import,
+Exports now use schema version 3; complete schema version 1 files still import,
 with all five new modules disabled. The import preview shows those changes before
 you confirm. Partial or falsely versioned configuration files remain invalid.
 
@@ -179,7 +179,8 @@ or focus it with the keyboard to reveal **Edit**; touch devices always show it.
 Choose **Edit** to reveal that row's save, discard and delete controls. Saving or
 discarding returns the row to its read-only view. Redirect saves are independent of **Save
 changes**, which controls feature enablement and the other plugin settings.
-Rules can be prepared while the feature is disabled. JavaScript is required to
+The redirect editor is disabled when its feature toggle is off. Turning it off
+preserves existing rules and any in-session edits. JavaScript is required to
 manage the editor; visitors do not need JavaScript to follow redirects.
 
 The editor preserves typed paths after failed or stale saves, and warns before
@@ -197,8 +198,8 @@ Validation and chain compilation run in linear time on save. Old snapshots remai
 for an hour to protect requests already in flight, then are cleaned up. Uninstall
 removes snapshots only when configuration removal is explicitly enabled.
 
-Exports continue to contain plain rule arrays in schema 2, rather than storage
-tokens. Schema 1 and 2 imports remain supported, up to 32 MB. Imports replace the
+Exports continue to contain plain rule arrays in schema 3, rather than storage
+tokens. Schema 1, 2 and 3 imports remain supported, up to 32 MB. Imports replace the
 complete rule set after preview and confirmation. If the home URL changes,
 compiled redirects fail closed until settings are saved again to rebuild them.
 
@@ -228,7 +229,30 @@ Administrators with `manage_options` always retain access, and an admin-toolbar
 indicator links back to the setting. A logged-in user with any selected role also
 bypasses maintenance; merely having an account does not grant a bypass.
 
-Frontend pages return WordPress's native standalone page with **HTTP 503**,
+Choose **Maintenance page** to display a published, non-password-protected page
+using a blank maintenance canvas and the normal WordPress content filters. Create your
+coming-soon or maintenance design under **Pages**, publish it, select it and save
+settings. To return to the default message, use **Remove selection** beside the
+selector (or choose its default option), then **Save changes**. This does not delete
+the page. Theme menus, headers and footers are automatically omitted for blocked
+visitors. The page uses its saved content rather than a theme PHP page template.
+WordPress head/body/footer hooks remain for styles and scripts, and page content
+is rendered before the head so blocks and builders can enqueue their assets.
+Header/footer elements deliberately placed inside the page content are preserved.
+Administrators and allowed roles still see the normal site and its navigation.
+The visitor stays at their requested URL; there is no redirect to the selected page.
+Test your page builder and dynamic blocks on the actual site: visitor REST calls
+remain blocked while maintenance is active.
+
+The default message is used when no page is selected, the selected page becomes
+unpublished, password-protected or unavailable.
+The title and message fields supply this fallback. Administrators and allowed
+roles continue to see the normal site; use a logged-out browser to test the page.
+Schema 3 exports contain the page ID; schema 1/2 imports default to the standard
+message. A schema 3 import requires a valid public page on the destination site;
+review the local page title in the preview before applying it.
+
+Without a selected custom page, frontend pages return WordPress's native standalone page with **HTTP 503**,
 no-cache headers and `Retry-After: 3600`. REST requests from visitors also return
 503. Maintenance runs before Site Staples redirects. **Login, wp-admin, AJAX,
 cron, XML-RPC and static uploads remain available** for recovery and background
@@ -292,6 +316,7 @@ WP_ROOT=/path/to/wordpress php tests/run.php
 WP_ROOT=/path/to/wordpress php tests/features.php
 php tests/ui.php
 php tests/redirects.php
+php tests/maintenance.php
 node tests/admin-tabs.cjs
 node tests/redirect-rows.cjs # Requires Playwright with Chromium installed
 php tools/package.php

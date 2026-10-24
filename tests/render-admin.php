@@ -12,6 +12,7 @@ function esc_textarea( $s ) { return esc_html( $s ); }
 function esc_attr__( $s, $d = '' ) { return esc_attr( $s ); }
 function esc_url( $s ) { return esc_attr( $s ); }
 function checked( $a, $b = true, $echo = true ) { $out = (string) $a === (string) $b ? ' checked="checked"' : ''; if ( $echo ) { echo $out; } return $out; }
+function selected( $a, $b, $echo = true ) { $out = (string)$a === (string)$b ? ' selected="selected"' : ''; if ($echo) echo $out; return $out; }
 function translate_user_role( $name ) { return $name; }
 function settings_errors() {}
 function settings_fields( $group ) { echo '<input type="hidden" name="option_page" value="' . esc_attr( $group ) . '">'; wp_nonce_field( $group ); }
@@ -23,6 +24,13 @@ function wp_enqueue_style( ...$args ) {}
 function wp_enqueue_script( ...$args ) {}
 function wp_localize_script( $handle, $name, $data ) { $GLOBALS['test_script_data'][$name]=$data; }
 $settings = SiteStaples\Settings::defaults();
+if (in_array('--maintenance-pages',$argv,true)) {
+	foreach (array(321=>'publish',322=>'draft',323=>'publish',324=>'private') as $id=>$status) {
+		$GLOBALS['test_posts'][$id]=(object)array('ID'=>$id,'post_type'=>'page','post_status'=>$status,'post_password'=>$id===323?'secret':'','post_title'=>'Coming & Soon');
+	}
+	$settings['maintenance']['page_id']=321;
+}
+
 if ( in_array( '--enabled', $argv, true ) ) {
 	foreach ( $settings as $key => &$value ) { if ( is_array( $value ) ) { $value['enabled'] = true; } } unset( $value );
 	$state = $settings; $state['comments']['scope'] = 'selected'; $state['comments']['post_types'] = array( 'post' ); $state['uninstall'] = true;

@@ -100,8 +100,19 @@
 	const save = document.getElementById('site-staples-save');
 	const discard = document.getElementById('site-staples-discard');
 	const status = document.getElementById('site-staples-save-status');
+	const maintenancePage = document.getElementById('staples-maintenance-page');
+	const clearMaintenancePage = document.getElementById('staples-maintenance-page-clear');
+	if (maintenancePage && clearMaintenancePage) {
+		clearMaintenancePage.addEventListener('click', () => {
+			maintenancePage.value = '0';
+			maintenancePage.dispatchEvent(new Event('change', { bubbles: true }));
+			maintenancePage.focus();
+		});
+	}
+
 	const refresh = () => {
 		syncOptions();
+		if (maintenancePage && clearMaintenancePage) clearMaintenancePage.hidden = maintenancePage.value === '0';
 		const dirty = snapshot() !== saved;
 		if (save) save.disabled = !dirty;
 		if (discard) { discard.hidden = false; discard.disabled = !dirty; }

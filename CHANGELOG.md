@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.3.1 — 2026-10-24
+
+- Render custom maintenance pages in a content-only canvas, automatically omitting
+  theme menus, headers and footers for blocked visitors.
+- Keep WordPress content rendering and asset hooks; render content before wp_head
+  so block and builder styles can enqueue, and hide the blocked visitor's admin bar.
+- Preserve normal theme navigation for administrators and explicitly allowed roles.
+
+## 1.3.0 — 2026-10-24
+
+- Added a published-page selector for custom maintenance and coming-soon designs.
+- Render the selected page through the normal WordPress theme/template pipeline
+  at the visitor's original URL, retaining HTTP 503, no-cache and Retry-After.
+- Preserve administrator/role bypasses, REST maintenance responses and the plain
+  message fallback when a selected page is unavailable or protected.
+- Added schema 3 exports with strict legacy schema 1/2 compatibility and page validation.
+- Link the maintenance toolbar indicator directly to the Site behavior tab.
+
 ## 1.2.0 — 2026-10-24
 
 - Increased redirect capacity to 10,000 rules with linear graph validation and

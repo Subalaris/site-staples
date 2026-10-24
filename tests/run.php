@@ -78,7 +78,7 @@ try {
 	foreach ( array( 'read_post', 'create_posts', 'assign_terms' ) as $cap ) { $GLOBALS['test_caps'][$cap] = false; expect( is_wp_error( $duplicate->duplicate( 10 ) ), 'duplicate denies missing ' . $cap ); $GLOBALS['test_caps'][$cap] = true; }
 	expect( is_wp_error( $duplicate->duplicate( 20 ) ), 'duplicate excludes unselected types' );
 
-	$doc = array( 'plugin' => 'site-staples', 'schema_version' => 2, 'settings' => Settings::defaults() );
+	$doc = array( 'plugin' => 'site-staples', 'schema_version' => Transfer::SCHEMA_VERSION, 'settings' => Settings::defaults() );
 	expect( Settings::defaults() === Transfer::parse( json_encode( $doc ) ), 'versioned export round trips through strict import validation' );
 	$invalids = array( '{', '[]', str_repeat( 'x', Transfer::MAX_BYTES + 1 ) );
 	foreach ( array( 'version', 'extra', 'boolean', 'limit', 'role', 'type', 'missing', 'action' ) as $case ) {

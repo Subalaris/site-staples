@@ -27,6 +27,7 @@
 	}
 
 	const text = window.siteStaplesRedirects;
+	const featureToggle = document.getElementById('staples-redirects');
 	const find = selector => editor.querySelector(selector);
 	const rows = find('[data-redirect-rows]');
 	const template = find('template');
@@ -133,7 +134,7 @@
 		renderPages(data);
 	};
 	const request = async (operation, extra = {}, success = '') => {
-		if (busy) return;
+		if (busy || (operation !== 'list' && !featureToggle.checked)) return;
 		busy = true;
 		editor.setAttribute('aria-busy', 'true');
 		controls();
@@ -205,7 +206,7 @@
 	});
 	editor.addEventListener('click', event => {
 		const button = event.target.closest('[data-redirect-save], [data-redirect-remove], [data-redirect-cancel], [data-redirect-edit]');
-		if (!button || busy) return;
+		if (!button || busy || !featureToggle.checked) return;
 		const row = button.closest('[data-redirect-row]');
 		if (button.hasAttribute('data-redirect-edit')) {
 			editMode(row, true);

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Site Staples 1.2.0\n"
+"Project-Id-Version: Site Staples 1.3.1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -8,17 +8,17 @@ msgstr ""
 
 #. translators: %s: source path of the rule being deleted.
 #. translators: 1: matching redirects, 2: total redirects.
-#: includes/Admin.php:61
+#: includes/Admin.php:63
 msgid "%1$d matching redirects of %2$d total."
 msgstr ""
 
 #. translators: 1: enabled features, 2: available features in this group.
-#: includes/Admin.php:360
+#: includes/Admin.php:401
 msgid "%1$d of %2$d enabled"
 msgstr ""
 
 #. translators: 1: image size name, 2: width, 3: height, 4: resize mode.
-#: includes/Admin.php:193
+#: includes/Admin.php:202
 msgid "%1$s — %2$d × %3$d (%4$s)"
 msgstr ""
 
@@ -28,71 +28,75 @@ msgid "%s (copy)"
 msgstr ""
 
 #. translators: %s: a previously registered image size.
-#: includes/Admin.php:198
+#: includes/Admin.php:207
 msgid "%s (not currently registered)"
 msgstr ""
 
-#: includes/Admin.php:275
+#: includes/Admin.php:297
 msgid "0 disables future normal revisions. Autosaves are preserved. Saving settings does not clean up existing revisions; WordPress trims them when a future revision is saved. Use the separate preview below for an explicit cleanup."
 msgstr ""
 
-#: includes/Admin.php:303
+#: includes/Admin.php:341
 msgid "301 — Permanent"
 msgstr ""
 
-#: includes/Admin.php:303
+#: includes/Admin.php:341
 msgid "302 — Temporary"
 msgstr ""
 
-#: includes/Admin.php:121
+#: includes/Admin.php:124
 msgid "A smoother workflow for your posts and pages."
 msgstr ""
 
-#: includes/Settings.php:44
+#: includes/Admin.php:141
+msgid "About simple redirects"
+msgstr ""
+
+#: includes/Settings.php:60
 msgid "Activity"
 msgstr ""
 
-#: includes/Admin.php:206
+#: includes/Admin.php:214
 msgid "Add redirect"
 msgstr ""
 
-#: includes/Admin.php:95
+#: includes/Admin.php:97
 msgid "Add useful information to post and page lists."
 msgstr ""
 
-#: includes/Admin.php:415
+#: includes/Admin.php:456
 msgid "Additional roles"
 msgstr ""
 
-#: includes/Admin.php:254
+#: includes/Admin.php:276
 msgid "Additional roles allowed to upload SVGs"
 msgstr ""
 
-#: includes/Admin.php:222
+#: includes/Admin.php:244
 msgid "Additional roles that can view the site"
 msgstr ""
 
-#: includes/Admin.php:242
+#: includes/Admin.php:264
 msgid "Adds the selected information to supported content lists. Columns do not change editing permissions or create new image sizes."
 msgstr ""
 
-#: includes/Admin.php:268
+#: includes/Admin.php:290
 msgid "Adds “Duplicate as draft” to the selected content lists. Copies content, terms, featured image and safe metadata. Protected integration data and likely unique identifiers are excluded."
 msgstr ""
 
-#: includes/Admin.php:271
+#: includes/Admin.php:293
 msgid "Adds “Replace file” to attachment edit screens. Supports local JPEG, PNG, GIF, WebP and AVIF files with the same type and extension. Keeps the ID and URL. Dimensions may change and cached copies may take time to refresh."
 msgstr ""
 
-#: includes/Admin.php:73
+#: includes/Admin.php:75
 msgid "Admin workspace"
 msgstr ""
 
-#: includes/Admin.php:261
+#: includes/Admin.php:283
 msgid "Administrators with upload permission are allowed by default. Selected roles still need upload_files. SVGs are sanitized, limited to 2 MB, and stripped of CSS and external references. PHP DOM and Fileinfo are required. Multisite upload restrictions still apply."
 msgstr ""
 
-#: includes/Admin.php:88
+#: includes/Admin.php:90
 msgid "Allow sanitized SVG uploads for trusted users."
 msgstr ""
 
@@ -105,55 +109,63 @@ msgid "Another settings update is running. Wait a moment and try again."
 msgstr ""
 
 #. translators: %s: a previously registered image size.
-#: includes/Admin.php:200
+#: includes/Admin.php:209
 msgid "Applies to future uploads, regeneration, and file replacement. Existing files remain. Fewer sizes can reduce responsive image choices and make visitors download larger images. Themes may fall back to the full image. 0 means an unconstrained dimension; full-size originals and WordPress big-image scaling are preserved."
 msgstr ""
 
-#: includes/Admin.php:226
+#: includes/Admin.php:248
 msgid "Apply cleanup to these roles"
 msgstr ""
 
-#: includes/Admin.php:426
+#: includes/Admin.php:467
 msgid "Apply imported configuration"
 msgstr ""
 
-#: includes/Settings.php:44
+#: includes/Settings.php:60
 msgid "At a glance"
 msgstr ""
 
-#: includes/Admin.php:379
+#: includes/Admin.php:420
 msgid "Back to settings"
 msgstr ""
 
-#: includes/Admin.php:251
+#: includes/Admin.php:273
 msgid "Blocks comments, pingbacks, and trackbacks, including on existing content. Existing comments stay in the database and return when disabled. Type selections apply only to “Selected post types”."
 msgstr ""
 
-#: includes/Admin.php:371
+#: includes/Admin.php:342
+msgid "Cancel"
+msgstr ""
+
+#: includes/Admin.php:412
 msgid "Changes apply after saving."
 msgstr ""
 
-#: includes/Admin.php:370
+#: includes/Admin.php:411
 msgid "Changes apply after saving. Cleanup always requires a separate action."
+msgstr ""
+
+#: includes/Settings.php:248
+msgid "Choose a published page without a password, or use the default maintenance message."
 msgstr ""
 
 #: includes/Modules/Transfer.php:84
 msgid "Choose a valid .json upload no larger than 32 MB."
 msgstr ""
 
-#: includes/Admin.php:86
+#: includes/Admin.php:88
 msgid "Choose what happens to plugin settings when Site Staples is deleted."
 msgstr ""
 
-#: includes/Admin.php:94
+#: includes/Admin.php:96
 msgid "Choose which dashboard widgets and toolbar items each role sees."
 msgstr ""
 
-#: includes/Admin.php:91
+#: includes/Admin.php:93
 msgid "Choose which image sizes WordPress generates for future uploads."
 msgstr ""
 
-#: includes/Admin.php:387
+#: includes/Admin.php:428
 msgid "Cleanup preview"
 msgstr ""
 
@@ -161,15 +173,23 @@ msgstr ""
 msgid "Cleanup stopped because a revision could not be removed. Preview again to see what remains."
 msgstr ""
 
+#: includes/Admin.php:217
+msgid "Clear search"
+msgstr ""
+
+#: includes/Admin.php:216
+msgid "Close"
+msgstr ""
+
 #: includes/Modules/Comments.php:121
 msgid "Comment feeds are disabled."
 msgstr ""
 
-#: includes/Admin.php:245
+#: includes/Admin.php:267
 msgid "Comment scope"
 msgstr ""
 
-#: includes/Settings.php:48
+#: includes/Settings.php:64
 msgid "Comments"
 msgstr ""
 
@@ -177,7 +197,7 @@ msgstr ""
 msgid "Comments and pings are disabled for this content."
 msgstr ""
 
-#: includes/Admin.php:330
+#: includes/Admin.php:371
 msgid "Configuration imported. No cleanup or content action was performed."
 msgstr ""
 
@@ -189,11 +209,11 @@ msgstr ""
 msgid "Confirm the preview before importing settings."
 msgstr ""
 
-#: includes/Admin.php:70
+#: includes/Admin.php:72
 msgid "Content"
 msgstr ""
 
-#: includes/Admin.php:238 includes/Admin.php:415
+#: includes/Admin.php:260 includes/Admin.php:456
 msgid "Content ID"
 msgstr ""
 
@@ -201,15 +221,19 @@ msgstr ""
 msgid "Content list columns"
 msgstr ""
 
-#: includes/Admin.php:89
+#: includes/Admin.php:91
 msgid "Create an editable draft from an existing post or page."
 msgstr ""
 
-#: includes/Admin.php:407
+#: includes/Admin.php:238
+msgid "Create and publish a page under Pages, then select it here. Only published pages without a password are listed. It displays the page content without the theme menu, header or footer, at the visitor’s current URL with HTTP 503. Choose the default option or Remove selection, then Save changes to return to the default message without deleting the page. The title and message below are also the fallback if the page becomes unavailable."
+msgstr ""
+
+#: includes/Admin.php:448
 msgid "Current"
 msgstr ""
 
-#: includes/Settings.php:48
+#: includes/Settings.php:64
 msgid "Customize"
 msgstr ""
 
@@ -221,20 +245,20 @@ msgstr ""
 msgid "Data removal"
 msgstr ""
 
-#: includes/Admin.php:174
+#: includes/Admin.php:183
 msgid "Deactivation always preserves settings. Uninstall never deletes posts, comments, revisions, or media."
 msgstr ""
 
-#: includes/Admin.php:304
+#: includes/Admin.php:342
 msgid "Delete"
 msgstr ""
 
 #. translators: %s: source path of the rule being deleted.
-#: includes/Admin.php:59
+#: includes/Admin.php:61
 msgid "Delete the redirect from %s?"
 msgstr ""
 
-#: includes/Admin.php:300
+#: includes/Admin.php:220 includes/Admin.php:327 includes/Admin.php:338
 msgid "Destination path"
 msgstr ""
 
@@ -242,23 +266,23 @@ msgstr ""
 msgid "Disable comments"
 msgstr ""
 
-#: includes/Admin.php:134
+#: includes/Admin.php:137
 msgid "Disabled"
 msgstr ""
 
-#: includes/Admin.php:371
+#: includes/Admin.php:412
 msgid "Discard"
 msgstr ""
 
-#: includes/Admin.php:304
+#: includes/Admin.php:342
 msgid "Discard edit"
 msgstr ""
 
-#: includes/Admin.php:57
+#: includes/Admin.php:59
 msgid "Discard unsaved edits to existing redirects and load another page?"
 msgstr ""
 
-#: includes/Admin.php:190
+#: includes/Admin.php:199
 msgid "Do not generate these sizes"
 msgstr ""
 
@@ -274,39 +298,48 @@ msgstr ""
 msgid "Each feature configuration must be a JSON object."
 msgstr ""
 
-#: includes/Admin.php:216
+#: includes/Admin.php:330
+msgid "Edit"
+msgstr ""
+
+#. translators: %s: source path of the redirect to edit.
+#: includes/Admin.php:55
+msgid "Edit redirect from %s"
+msgstr ""
+
+#: includes/Admin.php:224
 msgid "Enable JavaScript to search and manage redirect rules. Existing redirects continue to work."
 msgstr ""
 
-#: includes/Admin.php:134 includes/Admin.php:415
+#: includes/Admin.php:137 includes/Admin.php:456
 msgid "Enabled"
 msgstr ""
 
-#: includes/Admin.php:217
+#: includes/Admin.php:143
 msgid "Enter local paths such as /old-page/ and /new-page/. Start with 302 (temporary) while testing; browsers can cache 301 (permanent). No wildcards, query strings, external destinations, or protected WordPress routes. Include the site prefix on subdirectory sites. Only GET/HEAD visitors redirect; incoming query strings are discarded. Local chains resolve in one hop."
 msgstr ""
 
-#: includes/Admin.php:246 includes/Admin.php:436
+#: includes/Admin.php:268 includes/Admin.php:477
 msgid "Entire site"
 msgstr ""
 
-#: includes/Admin.php:344
+#: includes/Admin.php:385
 msgid "Every feature starts disabled. You decide what belongs on your site."
 msgstr ""
 
-#: includes/Admin.php:401
+#: includes/Admin.php:442
 msgid "Export settings"
 msgstr ""
 
-#: includes/Admin.php:338
+#: includes/Admin.php:379
 msgid "Feature groups"
 msgstr ""
 
-#: includes/Admin.php:415 includes/Modules/Columns.php:32
+#: includes/Admin.php:456 includes/Modules/Columns.php:32
 msgid "Featured image"
 msgstr ""
 
-#: includes/Admin.php:238
+#: includes/Admin.php:260
 msgid "Featured-image thumbnail"
 msgstr ""
 
@@ -318,27 +351,27 @@ msgstr ""
 msgid "Generated image sizes"
 msgstr ""
 
-#: includes/Admin.php:415
+#: includes/Admin.php:456
 msgid "Hidden dashboard widgets"
 msgstr ""
 
-#: includes/Admin.php:415
+#: includes/Admin.php:456
 msgid "Hidden toolbar items"
 msgstr ""
 
-#: includes/Admin.php:228
+#: includes/Admin.php:250
 msgid "Hide dashboard widgets"
 msgstr ""
 
-#: includes/Admin.php:228
+#: includes/Admin.php:250
 msgid "Hide toolbar items"
 msgstr ""
 
-#: includes/Admin.php:393
+#: includes/Admin.php:434
 msgid "I confirm permanent deletion of these old revisions, up to 100 in this batch."
 msgstr ""
 
-#: includes/Admin.php:427
+#: includes/Admin.php:468
 msgid "I confirm the configuration changes shown above, including feature and uninstall settings."
 msgstr ""
 
@@ -350,11 +383,11 @@ msgstr ""
 msgid "Import a JSON settings file no larger than 32 MB."
 msgstr ""
 
-#: includes/Admin.php:407
+#: includes/Admin.php:448
 msgid "Import preview"
 msgstr ""
 
-#: includes/Admin.php:407
+#: includes/Admin.php:448
 msgid "Imported"
 msgstr ""
 
@@ -363,23 +396,23 @@ msgid "Invalid redirect request."
 msgstr ""
 
 #. translators: %s: configuration section.
-#: includes/Settings.php:240
+#: includes/Settings.php:260
 msgid "Invalid values in %s. Check field types, selected roles and post types, allowed items, text lengths, and the revision limit (0–1000)."
 msgstr ""
 
-#: includes/Admin.php:415 includes/Modules/Columns.php:35
+#: includes/Admin.php:456 includes/Modules/Columns.php:35
 msgid "Last modified"
 msgstr ""
 
-#: includes/Admin.php:238
+#: includes/Admin.php:260
 msgid "Last modified date and time"
 msgstr ""
 
-#: includes/Admin.php:344
+#: includes/Admin.php:385
 msgid "Lightweight by design."
 msgstr ""
 
-#: includes/Admin.php:90
+#: includes/Admin.php:92
 msgid "Limit saved revisions and preview cleanup of older revisions."
 msgstr ""
 
@@ -387,11 +420,11 @@ msgstr ""
 msgid "Loading or saving redirects…"
 msgstr ""
 
-#: includes/Admin.php:210
+#: includes/Admin.php:218
 msgid "Loading redirects…"
 msgstr ""
 
-#: includes/Modules/Maintenance.php:39
+#: includes/Modules/Maintenance.php:69 includes/Modules/Maintenance.php:89
 msgid "Maintenance"
 msgstr ""
 
@@ -399,47 +432,51 @@ msgstr ""
 msgid "Maintenance mode"
 msgstr ""
 
-#: includes/Modules/Maintenance.php:55
+#: includes/Modules/Maintenance.php:105
 msgid "Maintenance mode is on"
 msgstr ""
 
-#: includes/Admin.php:124
+#: includes/Admin.php:229 includes/Admin.php:456
+msgid "Maintenance page"
+msgstr ""
+
+#: includes/Admin.php:127
 msgid "Make your WordPress workspace work for you."
 msgstr ""
 
-#: includes/Admin.php:123
+#: includes/Admin.php:126
 msgid "Manage where visitors go and what they see."
 msgstr ""
 
-#: includes/Admin.php:415
+#: includes/Admin.php:456
 msgid "Maximum revisions"
 msgstr ""
 
-#: includes/Admin.php:274
+#: includes/Admin.php:296
 msgid "Maximum revisions per post"
 msgstr ""
 
-#: includes/Admin.php:71
+#: includes/Admin.php:73
 msgid "Media"
 msgstr ""
 
-#: includes/Admin.php:85
+#: includes/Admin.php:87
 msgid "Move your Site Staples configuration between sites."
 msgstr ""
 
-#: includes/Settings.php:48
+#: includes/Settings.php:64
 msgid "New content menu"
 msgstr ""
 
-#: includes/Admin.php:211 includes/Admin.php:213
-msgid "Next"
+#: includes/Admin.php:321
+msgid "Next page"
 msgstr ""
 
-#: includes/Admin.php:433
+#: includes/Admin.php:474
 msgid "No"
 msgstr ""
 
-#: includes/Admin.php:423
+#: includes/Admin.php:464
 msgid "No configuration changes."
 msgstr ""
 
@@ -447,15 +484,16 @@ msgstr ""
 msgid "No featured image"
 msgstr ""
 
-#: includes/Admin.php:56
+#: includes/Admin.php:58
 msgid "No matching redirects. Try another search."
 msgstr ""
 
-#: includes/Admin.php:54
+#. translators: %s: source path of the redirect to edit.
+#: includes/Admin.php:56
 msgid "No redirects yet. Add your first rule below."
 msgstr ""
 
-#: includes/Admin.php:371
+#: includes/Admin.php:412
 msgid "No unsaved changes"
 msgstr ""
 
@@ -464,18 +502,18 @@ msgid "No valid replacement upload was received."
 msgstr ""
 
 #. translators: %d: total number of redirect rules.
-#: includes/Admin.php:447 includes/Admin.php:463
+#: includes/Admin.php:495 includes/Admin.php:511
 msgid "None"
 msgstr ""
 
 #. translators: %s: feature name.
-#: includes/Admin.php:182
+#: includes/Admin.php:191
 msgid "Options for %s"
 msgstr ""
 
 #. translators: 1: matching redirects, 2: total redirects.
 #. translators: 1: current page, 2: total pages.
-#: includes/Admin.php:63
+#: includes/Admin.php:65
 msgid "Page %1$d of %2$d"
 msgstr ""
 
@@ -483,23 +521,23 @@ msgstr ""
 msgid "Permissions or the revision limit changed. Preview cleanup again."
 msgstr ""
 
-#: includes/Admin.php:74
+#: includes/Admin.php:76
 msgid "Plugin settings"
 msgstr ""
 
-#: includes/Admin.php:415
+#: includes/Admin.php:456
 msgid "Post types"
 msgstr ""
 
-#: includes/Admin.php:122
+#: includes/Admin.php:125
 msgid "Practical controls for uploads, image sizes and file replacement."
 msgstr ""
 
-#: includes/Admin.php:234
+#: includes/Admin.php:256
 msgid "Presentation only: capabilities and direct access remain unchanged. A user with any selected role is affected. Toolbar choices also apply on the front end. The account menu and maintenance indicator remain available."
 msgstr ""
 
-#: includes/Admin.php:384
+#: includes/Admin.php:425
 msgid "Preview cleanup"
 msgstr ""
 
@@ -507,24 +545,24 @@ msgstr ""
 msgid "Preview cleanup and explicitly confirm before removing revisions."
 msgstr ""
 
-#: includes/Admin.php:402
+#: includes/Admin.php:443
 msgid "Preview import"
 msgstr ""
 
-#: includes/Admin.php:383
+#: includes/Admin.php:424
 msgid "Preview old normal revisions before removing any. Autosaves are excluded. Cleanup runs in batches of up to 100; continue each batch explicitly. Back up your database before cleanup."
 msgstr ""
 
 #. translators: 1: revisions at preview, 2: already removed, 3: current remaining candidates.
-#: includes/Admin.php:389
+#: includes/Admin.php:430
 msgid "Preview: %1$d revisions to remove. Removed in this run: %2$d. Remaining: %3$d."
 msgstr ""
 
-#: includes/Admin.php:211 includes/Admin.php:213
-msgid "Previous"
+#: includes/Admin.php:321
+msgid "Previous page"
 msgstr ""
 
-#: includes/Settings.php:44
+#: includes/Settings.php:60
 msgid "Quick draft"
 msgstr ""
 
@@ -532,7 +570,11 @@ msgstr ""
 msgid "Redirect deleted."
 msgstr ""
 
-#: includes/Admin.php:415
+#: includes/Admin.php:321
+msgid "Redirect pages"
+msgstr ""
+
+#: includes/Admin.php:456
 msgid "Redirect rules"
 msgstr ""
 
@@ -540,7 +582,7 @@ msgstr ""
 msgid "Redirect saved."
 msgstr ""
 
-#: includes/Admin.php:303
+#: includes/Admin.php:220 includes/Admin.php:327 includes/Admin.php:341
 msgid "Redirect type"
 msgstr ""
 
@@ -556,23 +598,27 @@ msgstr ""
 msgid "Redirects need unique local source paths, local destinations, and status 301 or 302 (maximum 10,000). Remove loops, self-redirects, query strings, dot segments, encoded delimiters, and protected WordPress paths. On subdirectory sites, include the site path."
 msgstr ""
 
-#: includes/Admin.php:209
+#: includes/Admin.php:217
 msgid "Reload rules"
 msgstr ""
 
-#: includes/Admin.php:173
+#: includes/Admin.php:182
 msgid "Remove Site Staples configuration when the plugin is deleted"
 msgstr ""
 
-#: includes/Admin.php:415
+#: includes/Admin.php:456
 msgid "Remove configuration on uninstall"
 msgstr ""
 
-#: includes/Admin.php:392
+#: includes/Admin.php:433
 msgid "Remove next batch"
 msgstr ""
 
-#: includes/Admin.php:84
+#: includes/Admin.php:238
+msgid "Remove selection"
+msgstr ""
+
+#: includes/Admin.php:86
 msgid "Replace an image while keeping its attachment ID and URL."
 msgstr ""
 
@@ -600,11 +646,11 @@ msgstr ""
 msgid "Replacement requires writable local files inside this site’s uploads directory. Remote storage and symbolic links are not supported."
 msgstr ""
 
-#: includes/Admin.php:383
+#: includes/Admin.php:424
 msgid "Revision cleanup"
 msgstr ""
 
-#: includes/Admin.php:330
+#: includes/Admin.php:371
 msgid "Revision cleanup batch finished. Review the remaining count below."
 msgstr ""
 
@@ -624,7 +670,7 @@ msgstr ""
 msgid "SVG upload rejected: role, MIME policy, or sanitization failed."
 msgstr ""
 
-#: includes/Admin.php:263
+#: includes/Admin.php:285
 msgid "SVG uploads are unavailable: enable the PHP DOM and Fileinfo extensions."
 msgstr ""
 
@@ -632,39 +678,39 @@ msgstr ""
 msgid "Safe SVG support"
 msgstr ""
 
-#: includes/Admin.php:372
+#: includes/Admin.php:413
 msgid "Save changes"
 msgstr ""
 
-#: includes/Admin.php:304
+#: includes/Admin.php:342
 msgid "Save redirect"
 msgstr ""
 
-#: includes/Admin.php:278
+#: includes/Admin.php:300
 msgid "Save this toggle to reveal export and import tools. Imports require a preview and confirmation and change configuration only."
 msgstr ""
 
-#: includes/Admin.php:415
+#: includes/Admin.php:456
 msgid "Scope"
 msgstr ""
 
-#: includes/Admin.php:209 includes/Settings.php:48
+#: includes/Admin.php:217 includes/Settings.php:64
 msgid "Search"
 msgstr ""
 
-#: includes/Admin.php:209
+#: includes/Admin.php:217
 msgid "Search source or destination"
 msgstr ""
 
-#: includes/Admin.php:148 includes/Admin.php:246 includes/Admin.php:436
+#: includes/Admin.php:157 includes/Admin.php:268 includes/Admin.php:477
 msgid "Selected post types"
 msgstr ""
 
-#: includes/Admin.php:92
+#: includes/Admin.php:94
 msgid "Send visitors from an old local path to a new one."
 msgstr ""
 
-#: includes/Admin.php:407
+#: includes/Admin.php:448
 msgid "Setting"
 msgstr ""
 
@@ -672,15 +718,15 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: includes/Admin.php:312
+#: includes/Admin.php:353
 msgid "Settings JSON file (maximum 32 MB)"
 msgstr ""
 
-#: includes/Admin.php:328
+#: includes/Admin.php:369
 msgid "Settings apply to this site only. Network defaults and site overrides are not available. SVG uploads remain subject to network file-type policy."
 msgstr ""
 
-#: includes/Settings.php:124
+#: includes/Settings.php:140
 msgid "Settings changed in another tab. Reload the rules or preview the import again before saving."
 msgstr ""
 
@@ -688,7 +734,7 @@ msgstr ""
 msgid "Settings import/export"
 msgstr ""
 
-#: includes/Admin.php:400
+#: includes/Admin.php:441
 msgid "Settings import/export tools"
 msgstr ""
 
@@ -696,16 +742,16 @@ msgstr ""
 msgid "Settings must be a JSON object; role and post-type lists must be JSON arrays."
 msgstr ""
 
-#: includes/Settings.php:176
+#: includes/Settings.php:192
 msgid "Settings must contain exactly the documented configuration keys."
 msgstr ""
 
-#: includes/Admin.php:93
+#: includes/Admin.php:95
 msgid "Show a temporary maintenance message to visitors."
 msgstr ""
 
 #. translators: %d: total number of redirect rules.
-#: includes/Admin.php:445
+#: includes/Admin.php:493
 msgid "Showing the first 10 of %d rules. The import replaces the complete rule set."
 msgstr ""
 
@@ -713,7 +759,7 @@ msgstr ""
 msgid "Simple redirects"
 msgstr ""
 
-#: includes/Admin.php:33 includes/Admin.php:326 includes/Guard.php:23
+#: includes/Admin.php:33 includes/Admin.php:367 includes/Guard.php:23
 msgid "Site Staples"
 msgstr ""
 
@@ -721,27 +767,28 @@ msgstr ""
 msgid "Site Staples requires WordPress 6.6 and PHP 8.1 or newer."
 msgstr ""
 
-#: includes/Admin.php:72
+#: includes/Admin.php:74
 msgid "Site behavior"
 msgstr ""
 
-#: includes/Settings.php:44
+#: includes/Settings.php:60
 msgid "Site health status"
 msgstr ""
 
-#: includes/Admin.php:415
+#: includes/Admin.php:456
 msgid "Sizes not generated"
 msgstr ""
 
-#: includes/Admin.php:300
+#: includes/Admin.php:220 includes/Admin.php:327 includes/Admin.php:338
 msgid "Source path"
 msgstr ""
 
-#: includes/Modules/Maintenance.php:25
+#: includes/Modules/Maintenance.php:27
 msgid "Temporarily unavailable"
 msgstr ""
 
-#: includes/Admin.php:55
+#. translators: %s: source path of the redirect to edit.
+#: includes/Admin.php:57
 msgid "The 10,000 redirect limit has been reached. You can still edit or delete existing rules."
 msgstr ""
 
@@ -757,11 +804,15 @@ msgstr ""
 msgid "The preview expired or settings changed. Preview the import again."
 msgstr ""
 
+#: includes/Admin.php:240
+msgid "The previously selected page is no longer available. Visitors receive the default message. Choose another page or save to use the default message."
+msgstr ""
+
 #: includes/Admin.php:51
 msgid "The request could not be confirmed. Your entered paths have been kept. Reload rules before retrying a save."
 msgstr ""
 
-#: includes/Settings.php:98
+#: includes/Settings.php:114
 msgid "The settings update timed out. Try saving again."
 msgstr ""
 
@@ -774,34 +825,39 @@ msgid "This attachment is already being replaced. Try again shortly."
 msgstr ""
 
 #: includes/Modules/Transfer.php:37
-msgid "This is not a supported Site Staples settings export (schema version 1 or 2)."
+msgid "This is not a supported Site Staples settings export (schema version 1, 2 or 3)."
 msgstr ""
 
 #: includes/RedirectManager.php:50
 msgid "This redirect no longer exists. Reload the rules."
 msgstr ""
 
-#: includes/Modules/Maintenance.php:50
+#: includes/Modules/Maintenance.php:100
 msgid "This site is temporarily unavailable for maintenance."
 msgstr ""
 
-#: includes/Admin.php:400
+#: includes/Admin.php:441
 msgid "Transfer versioned configuration only. Imports never run revision cleanup, replace files, or duplicate content. Roles and post types must exist on this site."
 msgstr ""
 
-#: includes/Admin.php:125
+#: includes/Admin.php:128
 msgid "Transfer your configuration and manage plugin data."
 msgstr ""
 
-#: includes/Admin.php:87
+#: includes/Admin.php:89
 msgid "Turn off comments across the site or for selected content types."
 msgstr ""
 
-#: includes/Admin.php:204
+#. translators: %d: page ID when the page has no title.
+#: includes/Admin.php:235
+msgid "Untitled page (#%d)"
+msgstr ""
+
+#: includes/Admin.php:143
 msgid "Up to 10,000 exact local redirects. Redirect changes save separately and take effect immediately when this feature is enabled. Use Save changes below to enable or disable the feature."
 msgstr ""
 
-#: includes/Settings.php:48
+#: includes/Settings.php:64
 msgid "Updates indicator"
 msgstr ""
 
@@ -809,43 +865,47 @@ msgstr ""
 msgid "Use a valid supported image with exactly the original MIME type and extension, within the upload size limit."
 msgstr ""
 
-#: includes/Admin.php:415
+#: includes/Admin.php:229 includes/Admin.php:482
+msgid "Use default maintenance message"
+msgstr ""
+
+#: includes/Admin.php:456
 msgid "Visitor message"
 msgstr ""
 
-#: includes/Admin.php:221
+#: includes/Admin.php:243
 msgid "Visitor message (plain text, maximum 2000 characters)"
 msgstr ""
 
-#: includes/Admin.php:220
+#: includes/Admin.php:242
 msgid "Visitor page title (maximum 120 characters)"
 msgstr ""
 
-#: includes/Admin.php:415
+#: includes/Admin.php:456
 msgid "Visitor title"
 msgstr ""
 
-#: includes/Admin.php:223
+#: includes/Admin.php:245
 msgid "Visitors receive HTTP 503 and a one-hour Retry-After header, including on REST requests. Administrators retain access. Login, admin screens, AJAX, cron, XML-RPC, and static files remain available. This does not make private content secure. Cached pages may bypass WordPress; purge or disable page/CDN caches before enabling. Blank text uses the translated default message."
 msgstr ""
 
-#: includes/Modules/Maintenance.php:26
+#: includes/Modules/Maintenance.php:28
 msgid "We are making improvements. Please check back soon."
 msgstr ""
 
-#: includes/Settings.php:44
+#: includes/Settings.php:60
 msgid "WordPress events and news"
 msgstr ""
 
-#: includes/Settings.php:48
+#: includes/Settings.php:64
 msgid "WordPress menu"
 msgstr ""
 
-#: includes/Admin.php:338
+#: includes/Admin.php:379
 msgid "Workspace"
 msgstr ""
 
-#: includes/Admin.php:433
+#: includes/Admin.php:474
 msgid "Yes"
 msgstr ""
 
@@ -869,52 +929,16 @@ msgstr ""
 msgid "You cannot replace this attachment."
 msgstr ""
 
-#: includes/Admin.php:371
+#: includes/Admin.php:412
 msgid "You have unsaved changes"
 msgstr ""
 
 #. translators: 1: image size name, 2: width, 3: height, 4: resize mode.
-#: includes/Admin.php:193
+#: includes/Admin.php:202
 msgid "cropped"
 msgstr ""
 
 #. translators: 1: image size name, 2: width, 3: height, 4: resize mode.
-#: includes/Admin.php:193
+#: includes/Admin.php:202
 msgid "proportional"
-msgstr ""
-
-#: includes/Admin.php
-msgid "Close"
-msgstr ""
-
-#: includes/Admin.php
-msgid "About simple redirects"
-msgstr ""
-
-#: includes/Admin.php
-msgid "Edit"
-msgstr ""
-
-#: includes/Admin.php
-msgid "Edit redirect from %s"
-msgstr ""
-
-#: includes/Admin.php
-msgid "Cancel"
-msgstr ""
-
-#: includes/Admin.php
-msgid "Redirect pages"
-msgstr ""
-
-#: includes/Admin.php
-msgid "Previous page"
-msgstr ""
-
-#: includes/Admin.php
-msgid "Next page"
-msgstr ""
-
-#: includes/Admin.php
-msgid "Clear search"
 msgstr ""
