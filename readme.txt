@@ -1,5 +1,5 @@
 === Site Staples ===
-Contributors: sitestaples
+Contributors: subalaris
 Tags: utilities, comments, svg, duplicate, revisions
 Requires at least: 6.6
 Tested up to: 7.1
@@ -21,9 +21,7 @@ Fileinfo are required for SVGs. GD/Imagick format support is needed for replacem
 No telemetry, external services or runtime Composer installation.
 
 See README.md for complete configuration, supported formats, integration and
-multisite limitations. See docs/VERIFICATION-1.1.md for the scope of testing; database
-and browser workflows on a live installed site remain to be verified.
-The redirects editor requires JavaScript; existing redirects work without it.
+multisite limitations. The redirects editor requires JavaScript; existing redirects work without it.
 
 == Installation ==
 1. Upload the ZIP through Plugins → Add New → Upload Plugin.
